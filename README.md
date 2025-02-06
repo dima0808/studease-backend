@@ -19,8 +19,8 @@ Spring Boot. Проєкт використовує Maven для управлін
 1. **Клонування репозиторію:**
 
     ```sh
-    git clone https://github.com/dima0808/kpi-ficting-backend.git
-    cd kpi-ficting-backend
+    git clone https://github.com/dima0808/studease-backend.git
+    cd studease
     ```
 
 2. **Збірка та запуск контейнерів:**
@@ -40,5 +40,5 @@ Spring Boot. Проєкт використовує Maven для управлін
 ## Клієнтська частина проєкту
 
 Клієнтська частина проєкту розроблена на основі React. Перейдіть
-за [посиланням на репозиторій](https://github.com/dima0808/kpi-ficting) для ознайомлення з
+за [посиланням на репозиторій](https://github.com/dima0808/studease) для ознайомлення з
 інструкцією по запуску.
