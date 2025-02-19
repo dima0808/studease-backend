@@ -14,4 +14,5 @@ public class ResponseEntryDto {
 
   private QuestionDto question;
   private List<Long> answerIds;
+  private String answerContent;
 }

@@ -23,5 +23,7 @@ public interface TestSessionService {
 
   TestSession saveAnswer(UUID testId, String credentials, List<Long> answerIds);
 
+  TestSession saveAnswer(UUID testId, String credentials, String answerContent);
+
   TestSession finishTestSession(UUID testId, String credentials);
 }

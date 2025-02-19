@@ -1,5 +1,8 @@
 package kpi.ficting.kpitestplatform.service.impl;
 
+import kpi.ficting.kpitestplatform.common.QuestionType;
+import kpi.ficting.kpitestplatform.repository.AnswerRepository;
+import kpi.ficting.kpitestplatform.repository.entity.Essay;
 import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -28,6 +31,7 @@ import org.springframework.stereotype.Service;
 public class TestSessionServiceImpl implements TestSessionService {
 
   private final TestService testService;
+  private final AnswerRepository answerRepository;
   private final TestSessionRepository testSessionRepository;
 
   @Override
@@ -118,6 +122,9 @@ public class TestSessionServiceImpl implements TestSessionService {
   public TestSession saveAnswer(UUID testId, String credentials, List<Long> answerIds) {
     TestSession testSession = findByTestIdAndCredentials(testId, credentials);
     ResponseEntry responseEntry = nextResponseEntry(testSession);
+    if (responseEntry.getQuestion().getType() == QuestionType.ESSAY) {
+      throw new IllegalArgumentException("Answer must be a text");
+    }
     List<Answer> answers = new ArrayList<>(responseEntry.getQuestion().getAnswers());
     answers = answers.stream()
         .filter(a -> answerIds.contains(a.getId()))
@@ -125,6 +132,27 @@ public class TestSessionServiceImpl implements TestSessionService {
     if (answers.isEmpty()) {
       throw new IllegalArgumentException("Answers must not be empty");
     }
+    responseEntry.setAnswers(answers);
+    testSession.setCurrentQuestionIndex(testSession.getCurrentQuestionIndex() + 1);
+    return testSessionRepository.save(testSession);
+  }
+
+  @Override
+  @Transactional
+  public TestSession saveAnswer(UUID testId, String credentials, String answerContent) {
+    TestSession testSession = findByTestIdAndCredentials(testId, credentials);
+    ResponseEntry responseEntry = nextResponseEntry(testSession);
+    if (responseEntry.getQuestion().getType() != QuestionType.ESSAY) {
+      throw new IllegalArgumentException("Answer must be a list of ids");
+    }
+    List<Answer> answers = new ArrayList<>();
+    Answer essayAnswer = Essay.builder()
+        .isCorrect(true)
+        .content(answerContent)
+        .question(responseEntry.getQuestion())
+        .build();
+    answerRepository.save(essayAnswer);
+    answers.add(essayAnswer);
     responseEntry.setAnswers(answers);
     testSession.setCurrentQuestionIndex(testSession.getCurrentQuestionIndex() + 1);
     return testSessionRepository.save(testSession);

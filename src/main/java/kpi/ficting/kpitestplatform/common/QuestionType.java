@@ -9,7 +9,8 @@ public enum QuestionType {
 
   SINGLE_CHOICE("single_choice"),
   MULTIPLE_CHOICES("multiple_choices"),
-  MATCHING("matching");
+  MATCHING("matching"),
+  ESSAY("essay");
 
   private final String displayName;
 }
