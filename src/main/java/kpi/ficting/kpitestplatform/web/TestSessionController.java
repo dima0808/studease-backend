@@ -77,8 +77,14 @@ public class TestSessionController {
   @MessageMapping("/tests/{testId}/saveAnswer")
   public TestMessage saveAnswer(@DestinationVariable UUID testId,
       @Payload ResponseEntryDto responseEntryDto, @Header("credentials") String credentials) {
-    TestSession testSession = testSessionService.saveAnswer(testId, credentials,
-        responseEntryDto.getAnswerIds());
+    TestSession testSession;
+    if (responseEntryDto.getAnswerContent() == null) {
+      testSession = testSessionService.saveAnswer(
+          testId, credentials, responseEntryDto.getAnswerIds());
+    } else {
+      testSession = testSessionService.saveAnswer(
+          testId, credentials, responseEntryDto.getAnswerContent());
+    }
     TestMessage testMessage = TestMessage.builder()
         .type(TestMessageType.SAVE_ANSWER)
         .content("Save answer. " + credentials)

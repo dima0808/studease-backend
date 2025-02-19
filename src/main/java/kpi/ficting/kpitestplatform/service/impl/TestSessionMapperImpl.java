@@ -2,7 +2,9 @@ package kpi.ficting.kpitestplatform.service.impl;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import kpi.ficting.kpitestplatform.common.QuestionType;
 import kpi.ficting.kpitestplatform.repository.entity.Answer;
+import kpi.ficting.kpitestplatform.repository.entity.Essay;
 import kpi.ficting.kpitestplatform.repository.entity.ResponseEntry;
 import kpi.ficting.kpitestplatform.dto.ResponseEntryDto;
 import kpi.ficting.kpitestplatform.service.mapper.QuestionMapper;
@@ -25,6 +27,8 @@ public class TestSessionMapperImpl implements TestSessionMapper {
             .answerIds(responseEntry.getAnswers().stream()
                 .map(Answer::getId)
                 .collect(Collectors.toList()))
+            .answerContent(responseEntry.getQuestion().getType() == QuestionType.ESSAY ?
+                ((Essay) responseEntry.getAnswers().get(0)).getContent() : null)
             .build())
         .collect(Collectors.toList());
   }

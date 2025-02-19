@@ -6,6 +6,7 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import java.util.List;
+import kpi.ficting.kpitestplatform.validation.ValidAnswers;
 import kpi.ficting.kpitestplatform.validation.ValidQuestionType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -16,6 +17,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Data
 @Builder
+@ValidAnswers
 public class QuestionDto {
 
   private Long id;
@@ -30,10 +32,9 @@ public class QuestionDto {
   private Integer points;
 
   @ValidQuestionType
-  @JsonPropertyDescription("Question type. One of: single_choice, multiple_choices, matching")
+  @JsonPropertyDescription("Question type. One of: single_choice, multiple_choices, matching, essay")
   private String type;
 
-  @Size(min = 2, message = "Question must have at least two answers")
   @Valid
   private List<AnswerDto> answers;
 }

@@ -6,6 +6,7 @@ import kpi.ficting.kpitestplatform.common.QuestionType;
 import kpi.ficting.kpitestplatform.repository.entity.Answer;
 import kpi.ficting.kpitestplatform.repository.entity.Choice;
 import kpi.ficting.kpitestplatform.repository.entity.Collection;
+import kpi.ficting.kpitestplatform.repository.entity.Essay;
 import kpi.ficting.kpitestplatform.repository.entity.MatchingPair;
 import kpi.ficting.kpitestplatform.repository.entity.Question;
 import kpi.ficting.kpitestplatform.repository.entity.Test;
@@ -49,12 +50,17 @@ public interface QuestionMapper {
                 .rightOption(matchingPair.getRightOption())
                 .isCorrect(isAdmin ? matchingPair.getIsCorrect() : null)
                 .build();
-          } else {
-            Choice choice = (Choice) answer;
+          } else if (answer instanceof Choice choice) {
             return AnswerDto.builder()
                 .id(choice.getId())
                 .content(choice.getContent())
                 .isCorrect(isAdmin ? choice.getIsCorrect() : null)
+                .build();
+          } else {
+            Essay essay = (Essay) answer;
+            return AnswerDto.builder()
+                .id(essay.getId())
+                .content(essay.getContent())
                 .build();
           }
         })
@@ -73,7 +79,9 @@ public interface QuestionMapper {
               .type(QuestionType.valueOf(questionDto.getType().toUpperCase()))
               .test(test)
               .build();
-          question.setAnswers(toAnswerList(questionDto.getAnswers(), question));
+          if (question.getType() != QuestionType.ESSAY) {
+            question.setAnswers(toAnswerList(questionDto.getAnswers(), question));
+          }
           return question;
         })
         .toList();
@@ -88,7 +96,9 @@ public interface QuestionMapper {
               .type(QuestionType.valueOf(questionDto.getType().toUpperCase()))
               .collection(collection)
               .build();
-          question.setAnswers(toAnswerList(questionDto.getAnswers(), question));
+          if (question.getType() != QuestionType.ESSAY) {
+            question.setAnswers(toAnswerList(questionDto.getAnswers(), question));
+          }
           return question;
         })
         .toList();

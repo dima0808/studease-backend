@@ -21,7 +21,7 @@ public class AnswerDto {
   private Boolean isCorrect;
 
   @Size(min = 1, max = 250, message = "Answer must be between 1 and 250 characters")
-  @JsonPropertyDescription("The answer to the question. Only for SINGLE_CHOICE and MULTIPLE_CHOICES question types")
+  @JsonPropertyDescription("The answer to the question. Only for SINGLE_CHOICE, MULTIPLE_CHOICES and ESSAY question types")
   private String content;
 
   @Size(min = 1, max = 250, message = "Answer must be between 1 and 250 characters")

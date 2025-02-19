@@ -32,6 +32,9 @@ public class TestUtils {
   }
 
   public static int calculateMark(ResponseEntry responseEntry) {
+    if (responseEntry.getQuestion().getType() == QuestionType.ESSAY) {
+      return responseEntry.getQuestion().getPoints();
+    }
     List<Long> correctAnswerIds = responseEntry.getQuestion().getAnswers().stream()
         .filter(Answer::getIsCorrect)
         .map(Answer::getId)
