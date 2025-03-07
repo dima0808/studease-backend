@@ -1,15 +1,17 @@
 package kpi.ficting.kpitestplatform.repository;
 
+import java.util.List;
 import java.util.Optional;
 import kpi.ficting.kpitestplatform.repository.entity.Collection;
-import kpi.ficting.kpitestplatform.repository.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface CollectionRepository extends JpaRepository<Collection, Long> {
 
-  Optional<Collection> findByName(String name);
+  List<Collection> findAllByAuthorEmail(String authorEmail);
 
-  boolean existsByNameAndAuthor(String name, User author);
+  Optional<Collection> findByNameAndAuthorEmail(String name, String authorEmail);
+
+  boolean existsByNameAndAuthorEmail(String name, String authorEmail);
 
   void deleteByName(String collectionName);
 }

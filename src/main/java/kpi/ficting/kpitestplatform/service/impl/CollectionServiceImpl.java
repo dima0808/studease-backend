@@ -23,20 +23,24 @@ public class CollectionServiceImpl implements CollectionService {
 
   @Override
   public List<Collection> findAll() {
-    return getUserFromAuthContext().getCollections();
+    String authorEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+    return collectionRepository.findAllByAuthorEmail(authorEmail);
   }
 
   @Override
   public Collection findByName(String collectionName) {
-    return collectionRepository.findByName(collectionName)
+    String authorEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+    return collectionRepository.findByNameAndAuthorEmail(collectionName, authorEmail)
         .orElseThrow(() -> new CollectionNotFoundException(collectionName));
   }
 
   @Override
   @Transactional
   public Collection create(Collection collection) {
-    User author = getUserFromAuthContext();
-    if (collectionRepository.existsByNameAndAuthor(collection.getName(), author)) {
+    String userEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+    User author = userRepository.findByEmail(userEmail)
+        .orElseThrow(() -> new UserNotFoundException(userEmail));
+    if (collectionRepository.existsByNameAndAuthorEmail(collection.getName(), author.getEmail())) {
       throw new CollectionAlreadyExistsException(collection.getName());
     }
     collection.setAuthor(author);
@@ -47,11 +51,5 @@ public class CollectionServiceImpl implements CollectionService {
   @Transactional
   public void deleteByName(String collectionName) {
     collectionRepository.deleteByName(collectionName);
-  }
-
-  private User getUserFromAuthContext() {
-    String userEmail = SecurityContextHolder.getContext().getAuthentication().getName();
-    return userRepository.findByEmail(userEmail)
-        .orElseThrow(() -> new UserNotFoundException(userEmail));
   }
 }
