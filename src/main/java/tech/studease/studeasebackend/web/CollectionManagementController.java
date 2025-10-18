@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import tech.studease.studeasebackend.dto.CollectionDeleteRequestDto;
 import tech.studease.studeasebackend.dto.CollectionDto;
 import tech.studease.studeasebackend.dto.CollectionInfo;
 import tech.studease.studeasebackend.dto.CollectionListInfo;
@@ -74,6 +75,13 @@ public class CollectionManagementController {
   @DeleteMapping("{collectionId}")
   public ResponseEntity<Void> deleteCollection(@PathVariable Long collectionId) {
     collectionService.deleteById(collectionId);
+    return ResponseEntity.noContent().build();
+  }
+
+  @DeleteMapping
+  public ResponseEntity<Void> deleteCollections(
+      @RequestBody @Valid CollectionDeleteRequestDto request) {
+    collectionService.deleteAllByIds(request);
     return ResponseEntity.noContent().build();
   }
 }

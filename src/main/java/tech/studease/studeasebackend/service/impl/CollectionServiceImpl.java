@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import tech.studease.studeasebackend.dto.CollectionDeleteRequestDto;
 import tech.studease.studeasebackend.repository.CollectionRepository;
 import tech.studease.studeasebackend.repository.UserRepository;
 import tech.studease.studeasebackend.repository.entity.Collection;
@@ -54,5 +55,12 @@ public class CollectionServiceImpl implements CollectionService {
   @Transactional
   public void deleteById(Long collectionId) {
     collectionRepository.deleteById(collectionId);
+  }
+
+  @Override
+  @Transactional
+  public void deleteAllByIds(CollectionDeleteRequestDto request) {
+    List<Collection> collections = collectionRepository.findAllById(request.getCollectionIds());
+    collectionRepository.deleteAll(collections);
   }
 }

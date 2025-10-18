@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import tech.studease.studeasebackend.dto.QuestionListDto;
 import tech.studease.studeasebackend.dto.SampleListDto;
+import tech.studease.studeasebackend.dto.TestDeleteRequestDto;
 import tech.studease.studeasebackend.dto.TestDto;
 import tech.studease.studeasebackend.dto.TestInfo;
 import tech.studease.studeasebackend.dto.TestListInfo;
@@ -118,6 +119,12 @@ public class TestManagementController {
   @DeleteMapping("{testId}")
   public ResponseEntity<Void> deleteTest(@PathVariable UUID testId) {
     testService.deleteById(testId);
+    return ResponseEntity.noContent().build();
+  }
+
+  @DeleteMapping
+  public ResponseEntity<Void> deleteCollections(@RequestBody @Valid TestDeleteRequestDto request) {
+    testService.deleteAllByIds(request);
     return ResponseEntity.noContent().build();
   }
 }

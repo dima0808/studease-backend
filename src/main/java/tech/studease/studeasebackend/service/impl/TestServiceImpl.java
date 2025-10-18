@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import tech.studease.studeasebackend.dto.TestDeleteRequestDto;
 import tech.studease.studeasebackend.repository.TestRepository;
 import tech.studease.studeasebackend.repository.UserRepository;
 import tech.studease.studeasebackend.repository.entity.Test;
@@ -70,6 +71,12 @@ public class TestServiceImpl implements TestService {
   @Override
   public void deleteById(UUID testId) {
     testRepository.deleteById(testId);
+  }
+
+  @Override
+  public void deleteAllByIds(TestDeleteRequestDto request) {
+    List<Test> collections = testRepository.findAllById(request.getTestIds());
+    testRepository.deleteAll(collections);
   }
 
   private User getUserFromAuthContext() {

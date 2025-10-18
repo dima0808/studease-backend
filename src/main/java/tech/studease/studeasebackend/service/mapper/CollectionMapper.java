@@ -13,7 +13,7 @@ public interface CollectionMapper {
         .id(collection.getId())
         .name(collection.getName())
         .questionsCount(collection.getQuestions().size())
-        .usedInTests(collection.getSamples().size())
+        .usedInTests(collection.getSamples() != null ? collection.getSamples().size() : 0)
         .build();
   }
 
