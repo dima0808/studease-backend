@@ -18,8 +18,10 @@ public class TestInfo {
 
   @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd.MM.yyyy HH:mm")
   private LocalDateTime openDate;
+
   @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd.MM.yyyy HH:mm")
   private LocalDateTime deadline;
+
   private Integer minutesToComplete;
 
   private Integer maxScore;

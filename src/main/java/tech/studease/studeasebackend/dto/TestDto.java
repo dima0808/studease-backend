@@ -9,11 +9,11 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import java.time.LocalDateTime;
 import java.util.List;
-import tech.studease.studeasebackend.validation.ValidQuestionSet;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import tech.studease.studeasebackend.validation.ValidQuestionSet;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -37,9 +37,7 @@ public class TestDto {
   @Min(value = 1, message = "Minutes to complete test must be greater than 0")
   private Integer minutesToComplete;
 
-  @Valid
-  private List<QuestionDto> questions;
+  @Valid private List<QuestionDto> questions;
 
-  @Valid
-  private List<SampleDto> samples;
+  @Valid private List<SampleDto> samples;
 }

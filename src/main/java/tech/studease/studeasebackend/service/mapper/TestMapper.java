@@ -6,10 +6,10 @@ import static tech.studease.studeasebackend.util.TestUtils.getQuestionsCount;
 import static tech.studease.studeasebackend.util.TestUtils.getStartedSessions;
 
 import java.util.List;
-import tech.studease.studeasebackend.repository.entity.Test;
 import tech.studease.studeasebackend.dto.TestDto;
 import tech.studease.studeasebackend.dto.TestInfo;
 import tech.studease.studeasebackend.dto.TestListInfo;
+import tech.studease.studeasebackend.repository.entity.Test;
 
 public interface TestMapper {
 
@@ -32,15 +32,11 @@ public interface TestMapper {
   }
 
   default List<TestInfo> toTestInfo(List<Test> tests, boolean isAdmin) {
-    return tests.stream()
-        .map((test) -> toTestInfo(test, isAdmin))
-        .toList();
+    return tests.stream().map((test) -> toTestInfo(test, isAdmin)).toList();
   }
 
   default TestListInfo toTestListInfo(List<Test> tests, boolean isAdmin) {
-    return TestListInfo.builder()
-        .tests(toTestInfo(tests, isAdmin))
-        .build();
+    return TestListInfo.builder().tests(toTestInfo(tests, isAdmin)).build();
   }
 
   Test toTest(TestDto testDto);

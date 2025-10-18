@@ -53,8 +53,17 @@ public class SecurityConfig {
     CorsConfiguration configuration = new CorsConfiguration();
     configuration.setAllowedOriginPatterns(List.of("*"));
     configuration.setAllowedMethods(List.of("PATCH", "GET", "POST", "PUT", "DELETE", "OPTIONS"));
-    configuration.setAllowedHeaders(List.of("Origin", "Accept", "Authorization", "X-Requested-With", "Content-Type", "Access-Control-Request-Method", "Access-Control-Request-Headers"));
-    configuration.setExposedHeaders(List.of("Access-Control-Allow-Origin", "Access-Control-Allow-Credentials"));
+    configuration.setAllowedHeaders(
+        List.of(
+            "Origin",
+            "Accept",
+            "Authorization",
+            "X-Requested-With",
+            "Content-Type",
+            "Access-Control-Request-Method",
+            "Access-Control-Request-Headers"));
+    configuration.setExposedHeaders(
+        List.of("Access-Control-Allow-Origin", "Access-Control-Allow-Credentials"));
     configuration.setAllowCredentials(true);
 
     UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
@@ -65,19 +74,20 @@ public class SecurityConfig {
   @Bean
   public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
     http.csrf(AbstractHttpConfigurer::disable)
-        .headers(httpSecurityHeadersConfigurer -> httpSecurityHeadersConfigurer.frameOptions(
-            HeadersConfigurer.FrameOptionsConfig::disable))
+        .headers(
+            httpSecurityHeadersConfigurer ->
+                httpSecurityHeadersConfigurer.frameOptions(
+                    HeadersConfigurer.FrameOptionsConfig::disable))
         .httpBasic(AbstractHttpConfigurer::disable)
         .cors(cors -> cors.configurationSource(corsConfigurationSource()))
         .exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler()))
         .sessionManagement(
             session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-        .authorizeHttpRequests(auth -> auth
-            .requestMatchers("/api/v1/admin/**").authenticated()
-            .anyRequest().permitAll()
-        );
-    http.addFilterBefore(authenticationJwtTokenFilter(),
-        UsernamePasswordAuthenticationFilter.class);
+        .authorizeHttpRequests(
+            auth ->
+                auth.requestMatchers("/api/v1/admin/**").authenticated().anyRequest().permitAll());
+    http.addFilterBefore(
+        authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
     return http.build();
   }
 }

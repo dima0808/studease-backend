@@ -14,4 +14,5 @@ public class CollectionInfo {
   private Long id;
   private String name;
   private Integer questionsCount;
+  private Integer usedInTests;
 }

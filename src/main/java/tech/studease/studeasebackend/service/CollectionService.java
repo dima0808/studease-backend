@@ -7,9 +7,9 @@ public interface CollectionService {
 
   List<Collection> findAll();
 
-  Collection findByName(String collectionName);
+  Collection findById(Long collectionId);
 
   Collection create(Collection collection);
 
-  void deleteByName(String collectionName);
+  void deleteById(Long collectionId);
 }

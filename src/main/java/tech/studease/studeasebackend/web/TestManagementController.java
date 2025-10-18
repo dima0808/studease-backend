@@ -4,21 +4,6 @@ import static tech.studease.studeasebackend.util.CsvGeneratorUtils.generateCsv;
 
 import jakarta.validation.Valid;
 import java.util.UUID;
-import tech.studease.studeasebackend.repository.entity.Test;
-import tech.studease.studeasebackend.dto.QuestionListDto;
-import tech.studease.studeasebackend.dto.SampleListDto;
-import tech.studease.studeasebackend.dto.TestDto;
-import tech.studease.studeasebackend.dto.TestInfo;
-import tech.studease.studeasebackend.dto.TestListInfo;
-import tech.studease.studeasebackend.dto.TestSessionListDto;
-import tech.studease.studeasebackend.service.QuestionService;
-import tech.studease.studeasebackend.service.SampleService;
-import tech.studease.studeasebackend.service.TestService;
-import tech.studease.studeasebackend.service.TestSessionService;
-import tech.studease.studeasebackend.service.mapper.QuestionMapper;
-import tech.studease.studeasebackend.service.mapper.TestMapper;
-import tech.studease.studeasebackend.service.mapper.TestSessionMapper;
-import tech.studease.studeasebackend.service.mapper.impl.SampleMapperImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -33,6 +18,21 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import tech.studease.studeasebackend.dto.QuestionListDto;
+import tech.studease.studeasebackend.dto.SampleListDto;
+import tech.studease.studeasebackend.dto.TestDto;
+import tech.studease.studeasebackend.dto.TestInfo;
+import tech.studease.studeasebackend.dto.TestListInfo;
+import tech.studease.studeasebackend.dto.TestSessionListDto;
+import tech.studease.studeasebackend.repository.entity.Test;
+import tech.studease.studeasebackend.service.QuestionService;
+import tech.studease.studeasebackend.service.SampleService;
+import tech.studease.studeasebackend.service.TestService;
+import tech.studease.studeasebackend.service.TestSessionService;
+import tech.studease.studeasebackend.service.mapper.QuestionMapper;
+import tech.studease.studeasebackend.service.mapper.TestMapper;
+import tech.studease.studeasebackend.service.mapper.TestSessionMapper;
+import tech.studease.studeasebackend.service.mapper.impl.SampleMapperImpl;
 
 @RestController
 @RequestMapping("/api/v1/admin/tests")
@@ -73,24 +73,27 @@ public class TestManagementController {
   }
 
   @GetMapping("{testId}/finishedSessions")
-  public ResponseEntity<Object> getFinishedSessionsByTestId(@PathVariable UUID testId,
-      @RequestParam(defaultValue = "") String credentials) {
+  public ResponseEntity<Object> getFinishedSessionsByTestId(
+      @PathVariable UUID testId, @RequestParam(defaultValue = "") String credentials) {
     if (credentials.isEmpty()) {
       return ResponseEntity.ok(
           testSessionMapper.toTestSessionListDto(
               testSessionService.findByTestId(testId, true), false));
     } else {
       return ResponseEntity.ok(
-          testSessionMapper.toTestSessionDto(testSessionService.findByTestIdAndCredentials(
-              testId, credentials, true), true, true));
+          testSessionMapper.toTestSessionDto(
+              testSessionService.findByTestIdAndCredentials(testId, credentials, true),
+              true,
+              true));
     }
   }
 
   @GetMapping("{testId}/finishedSessions/csv")
   public ResponseEntity<byte[]> getFinishedSessionsByTestIdToCsv(@PathVariable UUID testId) {
     Test test = testService.findById(testId);
-    TestSessionListDto testSessionListDto = testSessionMapper.toTestSessionListDto(
-        testSessionService.findByTestId(testId, true), false);
+    TestSessionListDto testSessionListDto =
+        testSessionMapper.toTestSessionListDto(
+            testSessionService.findByTestId(testId, true), false);
     HttpHeaders headers = new HttpHeaders();
     headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
     headers.setContentDispositionFormData("attachment", "sessions_" + test.getName() + ".csv");
@@ -106,8 +109,8 @@ public class TestManagementController {
 
   @PutMapping("{testId}")
   @Deprecated
-  public ResponseEntity<TestInfo> updateTest(@PathVariable UUID testId,
-      @RequestBody @Valid TestDto testDto) {
+  public ResponseEntity<TestInfo> updateTest(
+      @PathVariable UUID testId, @RequestBody @Valid TestDto testDto) {
     return ResponseEntity.ok(
         testMapper.toTestInfo(testService.update(testId, testMapper.toTest(testDto)), true));
   }

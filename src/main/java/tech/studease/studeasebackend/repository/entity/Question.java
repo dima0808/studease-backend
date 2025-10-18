@@ -9,12 +9,12 @@ import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import java.util.List;
-import tech.studease.studeasebackend.common.QuestionType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import tech.studease.studeasebackend.common.QuestionType;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -34,7 +34,11 @@ public class Question {
 
   private QuestionType type;
 
-  @OneToMany(mappedBy = "question", fetch = FetchType.LAZY, orphanRemoval = true, cascade = CascadeType.ALL)
+  @OneToMany(
+      mappedBy = "question",
+      fetch = FetchType.LAZY,
+      orphanRemoval = true,
+      cascade = CascadeType.ALL)
   private List<Answer> answers;
 
   @ManyToOne(fetch = FetchType.LAZY)

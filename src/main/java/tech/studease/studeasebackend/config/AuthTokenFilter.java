@@ -1,10 +1,10 @@
 package tech.studease.studeasebackend.config;
 
-import tech.studease.studeasebackend.util.JwtUtils;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
@@ -14,21 +14,19 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
-
-import java.io.IOException;
+import tech.studease.studeasebackend.util.JwtUtils;
 
 @Component
 @NoArgsConstructor
 public class AuthTokenFilter extends OncePerRequestFilter {
 
-  @Autowired
-  private JwtUtils jwtUtils;
+  @Autowired private JwtUtils jwtUtils;
 
-  @Autowired
-  private UserDetailsService userDetailsService;
+  @Autowired private UserDetailsService userDetailsService;
 
   @Override
-  protected void doFilterInternal(@NonNull HttpServletRequest request,
+  protected void doFilterInternal(
+      @NonNull HttpServletRequest request,
       @NonNull HttpServletResponse response,
       @NonNull FilterChain filterChain)
       throws IOException, ServletException {

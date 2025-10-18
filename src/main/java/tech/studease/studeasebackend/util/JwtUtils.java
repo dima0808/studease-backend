@@ -7,13 +7,12 @@ import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.SignatureException;
 import io.jsonwebtoken.UnsupportedJwtException;
+import java.util.Date;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
-
-import java.util.Date;
 
 @Component
 @Getter
@@ -36,18 +35,18 @@ public class JwtUtils {
   }
 
   public Claims extractClaims(String token) {
-    return Jwts.parser()
-        .setSigningKey(secretKey)
-        .parseClaimsJws(token)
-        .getBody();
+    return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody();
   }
 
   public boolean validateToken(String token) {
     try {
       Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token);
       return true;
-    } catch (SignatureException | MalformedJwtException | ExpiredJwtException |
-             UnsupportedJwtException | IllegalArgumentException e) {
+    } catch (SignatureException
+        | MalformedJwtException
+        | ExpiredJwtException
+        | UnsupportedJwtException
+        | IllegalArgumentException e) {
       return false;
     }
   }

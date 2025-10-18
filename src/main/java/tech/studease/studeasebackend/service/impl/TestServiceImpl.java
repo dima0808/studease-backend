@@ -5,18 +5,18 @@ import static tech.studease.studeasebackend.util.TestUtils.getStartedSessions;
 
 import java.util.List;
 import java.util.UUID;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import tech.studease.studeasebackend.repository.TestRepository;
 import tech.studease.studeasebackend.repository.UserRepository;
 import tech.studease.studeasebackend.repository.entity.Test;
-import tech.studease.studeasebackend.repository.TestRepository;
 import tech.studease.studeasebackend.repository.entity.User;
 import tech.studease.studeasebackend.service.TestService;
 import tech.studease.studeasebackend.service.exception.ImmutableTestException;
 import tech.studease.studeasebackend.service.exception.TestNotFoundException;
 import tech.studease.studeasebackend.service.exception.UserNotFoundException;
-import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -32,8 +32,7 @@ public class TestServiceImpl implements TestService {
 
   @Override
   public Test findById(UUID testId) {
-    return testRepository.findById(testId)
-        .orElseThrow(() -> new TestNotFoundException(testId));
+    return testRepository.findById(testId).orElseThrow(() -> new TestNotFoundException(testId));
   }
 
   @Override
@@ -75,7 +74,8 @@ public class TestServiceImpl implements TestService {
 
   private User getUserFromAuthContext() {
     String userEmail = SecurityContextHolder.getContext().getAuthentication().getName();
-    return userRepository.findByEmail(userEmail)
+    return userRepository
+        .findByEmail(userEmail)
         .orElseThrow(() -> new UserNotFoundException(userEmail));
   }
 }

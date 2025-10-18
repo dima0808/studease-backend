@@ -12,7 +12,8 @@ import java.lang.annotation.Target;
 @Constraint(validatedBy = AnswersValidator.class)
 public @interface ValidAnswers {
 
-  String message() default "Question must have at least two answers and at least one correct answer";
+  String message() default
+      "Question must have at least two answers and at least one correct answer";
 
   Class<?>[] groups() default {};
 

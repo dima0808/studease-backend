@@ -4,13 +4,13 @@ import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
-import tech.studease.studeasebackend.repository.entity.User;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import tech.studease.studeasebackend.repository.entity.User;
 
 @AllArgsConstructor
 @Getter
@@ -23,14 +23,12 @@ public class UserDetailsImpl implements UserDetails {
   private Collection<? extends GrantedAuthority> authorities;
 
   public static UserDetailsImpl build(User user) {
-    List<GrantedAuthority> authorities = user.getRoles().stream()
-        .map(role -> new SimpleGrantedAuthority(role.getName()))
-        .collect(Collectors.toList());
+    List<GrantedAuthority> authorities =
+        user.getRoles().stream()
+            .map(role -> new SimpleGrantedAuthority(role.getName()))
+            .collect(Collectors.toList());
     return new UserDetailsImpl(
-        user.getUserReference(),
-        user.getEmail(),
-        user.getPassword(),
-        authorities);
+        user.getUserReference(), user.getEmail(), user.getPassword(), authorities);
   }
 
   @Override

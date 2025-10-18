@@ -1,9 +1,6 @@
 package tech.studease.studeasebackend.service.impl;
 
 import java.util.Map;
-import tech.studease.studeasebackend.common.QuestionType;
-import tech.studease.studeasebackend.dto.QuestionListDto;
-import tech.studease.studeasebackend.service.OpenAIService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.ai.chat.model.ChatResponse;
@@ -13,6 +10,9 @@ import org.springframework.ai.converter.BeanOutputConverter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
+import tech.studease.studeasebackend.common.QuestionType;
+import tech.studease.studeasebackend.dto.QuestionListDto;
+import tech.studease.studeasebackend.service.OpenAIService;
 
 @Service
 @RequiredArgsConstructor
@@ -24,18 +24,20 @@ public class OpenAIServiceImpl implements OpenAIService {
   private Resource questionsPrompt;
 
   @Override
-  public QuestionListDto generateQuestions(String theme, QuestionType questionType, int points,
-      int questionsCount) {
-    BeanOutputConverter<QuestionListDto> converter = new BeanOutputConverter<>(QuestionListDto.class);
+  public QuestionListDto generateQuestions(
+      String theme, QuestionType questionType, int points, int questionsCount) {
+    BeanOutputConverter<QuestionListDto> converter =
+        new BeanOutputConverter<>(QuestionListDto.class);
     String format = converter.getFormat();
     PromptTemplate promptTemplate = new PromptTemplate(questionsPrompt);
-    Prompt prompt = promptTemplate.create(Map.of(
-        "theme", theme,
-        "questionType", questionType.getDisplayName(),
-        "difficulty", points < 2 ? "easy" : points < 4 ? "medium" : "hard",
-        "questionsCount", questionsCount,
-        "format", format
-    ));
+    Prompt prompt =
+        promptTemplate.create(
+            Map.of(
+                "theme", theme,
+                "questionType", questionType.getDisplayName(),
+                "difficulty", points < 2 ? "easy" : points < 4 ? "medium" : "hard",
+                "questionsCount", questionsCount,
+                "format", format));
     ChatResponse response = chatModel.call(prompt);
     QuestionListDto questions = converter.convert(response.getResult().getOutput().getContent());
     if (questions == null) {

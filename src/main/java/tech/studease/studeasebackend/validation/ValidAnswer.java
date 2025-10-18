@@ -12,7 +12,8 @@ import java.lang.annotation.Target;
 @Constraint(validatedBy = AnswerValidator.class)
 public @interface ValidAnswer {
 
-  String message() default "Answer must have either both content and isCorrect or both leftOption and rightOption";
+  String message() default
+      "Answer must have either both content and isCorrect or both leftOption and rightOption";
 
   Class<?>[] groups() default {};
 

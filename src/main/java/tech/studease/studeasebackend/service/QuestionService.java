@@ -10,5 +10,5 @@ public interface QuestionService {
 
   List<Question> findByTestId(UUID testId);
 
-  List<Question> findByCollectionName(String collectionName);
+  List<Question> findByCollectionId(Long collectionId);
 }

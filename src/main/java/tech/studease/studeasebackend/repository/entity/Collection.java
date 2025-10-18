@@ -30,8 +30,19 @@ public class Collection {
 
   private String name;
 
-  @OneToMany(mappedBy = "collection", fetch = FetchType.EAGER, orphanRemoval = true, cascade = CascadeType.ALL)
+  @OneToMany(
+      mappedBy = "collection",
+      fetch = FetchType.EAGER,
+      orphanRemoval = true,
+      cascade = CascadeType.ALL)
   private List<Question> questions;
+
+  @OneToMany(
+      mappedBy = "collection",
+      fetch = FetchType.EAGER,
+      orphanRemoval = true,
+      cascade = CascadeType.ALL)
+  private List<Sample> samples;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(nullable = false)

@@ -36,13 +36,25 @@ public class Test {
   private LocalDateTime deadline;
   private Integer minutesToComplete;
 
-  @OneToMany(mappedBy = "test", fetch = FetchType.EAGER, orphanRemoval = true, cascade = CascadeType.ALL)
+  @OneToMany(
+      mappedBy = "test",
+      fetch = FetchType.EAGER,
+      orphanRemoval = true,
+      cascade = CascadeType.ALL)
   private List<TestSession> sessions;
 
-  @OneToMany(mappedBy = "test", fetch = FetchType.EAGER, orphanRemoval = true, cascade = CascadeType.ALL)
+  @OneToMany(
+      mappedBy = "test",
+      fetch = FetchType.EAGER,
+      orphanRemoval = true,
+      cascade = CascadeType.ALL)
   private List<Question> questions;
 
-  @OneToMany(mappedBy = "test", fetch = FetchType.EAGER, orphanRemoval = true, cascade = CascadeType.ALL)
+  @OneToMany(
+      mappedBy = "test",
+      fetch = FetchType.EAGER,
+      orphanRemoval = true,
+      cascade = CascadeType.ALL)
   private List<Sample> samples;
 
   @ManyToOne(fetch = FetchType.LAZY)

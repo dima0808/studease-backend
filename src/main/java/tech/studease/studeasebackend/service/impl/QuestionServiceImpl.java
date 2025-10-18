@@ -1,14 +1,14 @@
 package tech.studease.studeasebackend.service.impl;
 
-import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.UUID;
-import tech.studease.studeasebackend.repository.entity.Question;
-import tech.studease.studeasebackend.repository.QuestionRepository;
-import tech.studease.studeasebackend.service.QuestionService;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.Hibernate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import tech.studease.studeasebackend.repository.QuestionRepository;
+import tech.studease.studeasebackend.repository.entity.Question;
+import tech.studease.studeasebackend.service.QuestionService;
 
 @Service
 @RequiredArgsConstructor
@@ -31,8 +31,8 @@ public class QuestionServiceImpl implements QuestionService {
 
   @Override
   @Transactional
-  public List<Question> findByCollectionName(String collectionName) {
-    List<Question> questions = questionRepository.findByCollectionName(collectionName);
+  public List<Question> findByCollectionId(Long collectionId) {
+    List<Question> questions = questionRepository.findByCollectionId(collectionId);
     questions.forEach(question -> Hibernate.initialize(question.getAnswers()));
     return questions;
   }

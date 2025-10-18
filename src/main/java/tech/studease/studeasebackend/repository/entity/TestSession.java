@@ -38,7 +38,11 @@ public class TestSession {
 
   private Integer currentQuestionIndex;
 
-  @OneToMany(mappedBy = "testSession", fetch = FetchType.LAZY, orphanRemoval = true, cascade = CascadeType.ALL)
+  @OneToMany(
+      mappedBy = "testSession",
+      fetch = FetchType.LAZY,
+      orphanRemoval = true,
+      cascade = CascadeType.ALL)
   private List<ResponseEntry> responses;
 
   @ManyToOne(fetch = FetchType.LAZY)

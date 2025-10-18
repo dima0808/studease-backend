@@ -17,7 +17,7 @@ public class AnswerValidator implements ConstraintValidator<ValidAnswer, AnswerD
     boolean isRightOptionFilled = answerDto.getRightOption() != null;
     boolean isIsCorrectFilled = answerDto.getIsCorrect() != null;
 
-    return (isContentFilled && !isLeftOptionFilled && !isRightOptionFilled && isIsCorrectFilled) ||
-        (!isContentFilled && isLeftOptionFilled && isRightOptionFilled && !isIsCorrectFilled);
+    return (isContentFilled && !isLeftOptionFilled && !isRightOptionFilled && isIsCorrectFilled)
+        || (!isContentFilled && isLeftOptionFilled && isRightOptionFilled && !isIsCorrectFilled);
   }
 }

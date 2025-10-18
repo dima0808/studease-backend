@@ -6,12 +6,12 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import java.util.List;
-import tech.studease.studeasebackend.validation.ValidAnswers;
-import tech.studease.studeasebackend.validation.ValidQuestionType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import tech.studease.studeasebackend.validation.ValidAnswers;
+import tech.studease.studeasebackend.validation.ValidQuestionType;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -32,9 +32,9 @@ public class QuestionDto {
   private Integer points;
 
   @ValidQuestionType
-  @JsonPropertyDescription("Question type. One of: single_choice, multiple_choices, matching, essay")
+  @JsonPropertyDescription(
+      "Question type. One of: single_choice, multiple_choices, matching, essay")
   private String type;
 
-  @Valid
-  private List<AnswerDto> answers;
+  @Valid private List<AnswerDto> answers;
 }

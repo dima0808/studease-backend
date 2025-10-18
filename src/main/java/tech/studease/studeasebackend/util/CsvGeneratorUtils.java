@@ -1,10 +1,9 @@
 package tech.studease.studeasebackend.util;
 
-import tech.studease.studeasebackend.dto.TestSessionDto;
-import tech.studease.studeasebackend.dto.TestSessionListDto;
-
 import java.time.Duration;
 import java.time.LocalDateTime;
+import tech.studease.studeasebackend.dto.TestSessionDto;
+import tech.studease.studeasebackend.dto.TestSessionListDto;
 
 public class CsvGeneratorUtils {
   private static final String CSV_HEADER = "Credentials,Mark,StartedAt,FinishedAt,Time\n";
@@ -14,11 +13,16 @@ public class CsvGeneratorUtils {
     csvContent.append(CSV_HEADER);
     for (TestSessionDto sessionListDto : testSessionListDto.getSessions()) {
       csvContent
-          .append(String.format("%s %s",
-              sessionListDto.getStudentGroup(), sessionListDto.getStudentName())).append(",")
-          .append(sessionListDto.getMark()).append(",")
-          .append(sessionListDto.getStartedAt()).append(",")
-          .append(sessionListDto.getFinishedAt()).append(",")
+          .append(
+              String.format(
+                  "%s %s", sessionListDto.getStudentGroup(), sessionListDto.getStudentName()))
+          .append(",")
+          .append(sessionListDto.getMark())
+          .append(",")
+          .append(sessionListDto.getStartedAt())
+          .append(",")
+          .append(sessionListDto.getFinishedAt())
+          .append(",")
           .append(formatDuration(sessionListDto.getStartedAt(), sessionListDto.getFinishedAt()))
           .append("\n");
     }

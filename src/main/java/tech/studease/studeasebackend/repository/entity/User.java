@@ -37,10 +37,18 @@ public class User {
   private Integer balance;
   private boolean isActive;
 
-  @OneToMany(mappedBy = "author", fetch = FetchType.EAGER, orphanRemoval = true, cascade = CascadeType.ALL)
+  @OneToMany(
+      mappedBy = "author",
+      fetch = FetchType.EAGER,
+      orphanRemoval = true,
+      cascade = CascadeType.ALL)
   private List<Test> tests;
 
-  @OneToMany(mappedBy = "author", fetch = FetchType.EAGER, orphanRemoval = true, cascade = CascadeType.ALL)
+  @OneToMany(
+      mappedBy = "author",
+      fetch = FetchType.EAGER,
+      orphanRemoval = true,
+      cascade = CascadeType.ALL)
   private List<Collection> collections;
 
   @ManyToMany(fetch = FetchType.EAGER)

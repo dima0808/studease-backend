@@ -19,6 +19,5 @@ public class CollectionDto {
   @Size(min = 1, max = 100, message = "Collection name must be between 1 and 100 characters")
   private String name;
 
-  @Valid
-  private List<QuestionDto> questions;
+  @Valid private List<QuestionDto> questions;
 }
