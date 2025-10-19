@@ -6,7 +6,7 @@ public class TestSessionNotFoundException extends RuntimeException {
     super("Test session with student " + studentGroup + " " + studentName + " not found");
   }
 
-  public TestSessionNotFoundException(String sessionId) {
+  public TestSessionNotFoundException(Long sessionId) {
     super("Test session with sessionId " + sessionId + " not found");
   }
 }

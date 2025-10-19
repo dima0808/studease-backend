@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import tech.studease.studeasebackend.dto.QuestionListDto;
 import tech.studease.studeasebackend.dto.SampleListDto;
@@ -74,19 +73,10 @@ public class TestManagementController {
   }
 
   @GetMapping("{testId}/finishedSessions")
-  public ResponseEntity<Object> getFinishedSessionsByTestId(
-      @PathVariable UUID testId, @RequestParam(defaultValue = "") String credentials) {
-    if (credentials.isEmpty()) {
-      return ResponseEntity.ok(
-          testSessionMapper.toTestSessionListDto(
-              testSessionService.findByTestId(testId, true), false));
-    } else {
-      return ResponseEntity.ok(
-          testSessionMapper.toTestSessionDto(
-              testSessionService.findByTestIdAndCredentials(testId, credentials, true),
-              true,
-              true));
-    }
+  public ResponseEntity<TestSessionListDto> getFinishedSessionsByTestId(@PathVariable UUID testId) {
+    return ResponseEntity.ok(
+        testSessionMapper.toTestSessionListDto(
+            testSessionService.findByTestId(testId, true), false));
   }
 
   @GetMapping("{testId}/finishedSessions/csv")

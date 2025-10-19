@@ -29,7 +29,6 @@ public class TestSession {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  private String sessionId;
   private String studentGroup;
   private String studentName;
 

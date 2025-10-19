@@ -1,5 +1,8 @@
 package tech.studease.studeasebackend.service.impl;
 
+import static tech.studease.studeasebackend.event.GlobalTestSessionScheduler.addTimer;
+import static tech.studease.studeasebackend.event.GlobalTestSessionScheduler.removeTimer;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -12,7 +15,9 @@ import org.hibernate.Hibernate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import tech.studease.studeasebackend.common.QuestionType;
+import tech.studease.studeasebackend.domain.Credentials;
 import tech.studease.studeasebackend.repository.AnswerRepository;
+import tech.studease.studeasebackend.repository.TestRepository;
 import tech.studease.studeasebackend.repository.TestSessionRepository;
 import tech.studease.studeasebackend.repository.entity.Answer;
 import tech.studease.studeasebackend.repository.entity.Essay;
@@ -21,8 +26,8 @@ import tech.studease.studeasebackend.repository.entity.ResponseEntry;
 import tech.studease.studeasebackend.repository.entity.Sample;
 import tech.studease.studeasebackend.repository.entity.Test;
 import tech.studease.studeasebackend.repository.entity.TestSession;
-import tech.studease.studeasebackend.service.TestService;
 import tech.studease.studeasebackend.service.TestSessionService;
+import tech.studease.studeasebackend.service.exception.TestNotFoundException;
 import tech.studease.studeasebackend.service.exception.TestSessionAlreadyExistsException;
 import tech.studease.studeasebackend.service.exception.TestSessionNotFoundException;
 
@@ -30,45 +35,9 @@ import tech.studease.studeasebackend.service.exception.TestSessionNotFoundExcept
 @RequiredArgsConstructor
 public class TestSessionServiceImpl implements TestSessionService {
 
-  private final TestService testService;
-  private final AnswerRepository answerRepository;
   private final TestSessionRepository testSessionRepository;
-
-  @Override
-  public TestSession save(TestSession testSession) {
-    return testSessionRepository.save(testSession);
-  }
-
-  @Override
-  @Transactional
-  public TestSession findByTestIdAndCredentials(
-      UUID testId, String credentials, boolean finishedOnly) {
-    String studentGroup = credentials.split(":")[0];
-    String studentName = credentials.split(":")[1];
-    TestSession testSession =
-        testSessionRepository
-            .findTestSessionByStudentGroupAndStudentNameAndTestId(studentGroup, studentName, testId)
-            .orElseThrow(() -> new TestSessionNotFoundException(studentGroup, studentName));
-    if (finishedOnly && testSession.getFinishedAt() == null) {
-      throw new TestSessionNotFoundException(studentGroup, studentName);
-    }
-    Hibernate.initialize(testSession.getResponses());
-    testSession.getResponses().forEach(r -> Hibernate.initialize(r.getQuestion().getAnswers()));
-    return testSession;
-  }
-
-  @Override
-  @Transactional
-  public TestSession findByTestIdAndCredentials(UUID testId, String credentials) {
-    return findByTestIdAndCredentials(testId, credentials, false);
-  }
-
-  @Override
-  public TestSession findBySessionId(String sessionId) {
-    return testSessionRepository
-        .findTestSessionBySessionId(sessionId)
-        .orElseThrow(() -> new TestSessionNotFoundException(sessionId));
-  }
+  private final TestRepository testRepository;
+  private final AnswerRepository answerRepository;
 
   @Override
   @Transactional
@@ -87,65 +56,137 @@ public class TestSessionServiceImpl implements TestSessionService {
   }
 
   @Override
-  public TestSession startTestSession(UUID testId, TestSession testSession) {
+  public TestSession findByTestIdAndCredentials(UUID testId, Credentials credentials) {
+    return testSessionRepository
+        .findTestSessionByStudentGroupAndStudentNameAndTestId(
+            credentials.studentGroup(), credentials.studentName(), testId)
+        .orElseThrow(
+            () ->
+                new TestSessionNotFoundException(
+                    credentials.studentGroup(), credentials.studentName()));
+  }
+
+  @Override
+  public TestSession startTestSession(UUID testId, Credentials credentials) {
+    String studentGroup = credentials.studentGroup();
+    String studentName = credentials.studentName();
     if (testSessionRepository.existsByStudentGroupAndStudentNameAndTestId(
-        testSession.getStudentGroup(), testSession.getStudentName(), testId)) {
-      throw new TestSessionAlreadyExistsException(
-          testSession.getStudentGroup(), testSession.getStudentName());
+        studentGroup, studentName, testId)) {
+      throw new TestSessionAlreadyExistsException(studentGroup, studentName);
     }
-    Test test = testService.findById(testId);
+
+    Test test =
+        testRepository.findById(testId).orElseThrow(() -> new TestNotFoundException(testId));
+
     if (test.getOpenDate().isAfter(LocalDateTime.now())) {
       throw new IllegalStateException("Test is not open yet");
     }
     if (test.getDeadline().isBefore(LocalDateTime.now())) {
       throw new IllegalStateException("Test is closed");
     }
+
+    TestSession testSession =
+        TestSession.builder()
+            .studentGroup(studentGroup)
+            .studentName(studentName)
+            .startedAt(LocalDateTime.now())
+            .currentQuestionIndex(0)
+            .test(test)
+            .build();
+
     List<ResponseEntry> responses = new ArrayList<>();
     addTestQuestions(responses, test.getQuestions(), testSession);
     addSampleQuestions(responses, test.getSamples(), testSession);
     Collections.shuffle(responses);
     testSession.setResponses(responses);
-    testSession.setTest(test);
-    testSession.setStartedAt(LocalDateTime.now());
-    testSession.setCurrentQuestionIndex(0);
+
+    testSessionRepository.save(testSession);
+
+    addTimer(testSession.getId(), test.getMinutesToComplete() * 60);
+
+    return testSession;
+  }
+
+  @Override
+  public Question nextQuestion(TestSession testSession, List<Long> answerIds) {
+    saveAnswers(testSession, answerIds);
+    testSession.setCurrentQuestionIndex(testSession.getCurrentQuestionIndex() + 1);
+
+    testSessionRepository.save(testSession);
+
+    return nextResponseEntry(testSession).getQuestion();
+  }
+
+  @Override
+  public Question nextQuestion(TestSession testSession, String answerContent) {
+    saveAnswers(testSession, answerContent);
+    testSession.setCurrentQuestionIndex(testSession.getCurrentQuestionIndex() + 1);
+
+    testSessionRepository.save(testSession);
+
+    return nextResponseEntry(testSession).getQuestion();
+  }
+
+  @Override
+  public TestSession finishTestSession(TestSession testSession, List<Long> answerIds) {
+    saveAnswers(testSession, answerIds);
+    testSession.setFinishedAt(LocalDateTime.now());
+
+    removeTimer(testSession.getId());
+
     return testSessionRepository.save(testSession);
   }
 
   @Override
-  @Transactional
-  public Question nextQuestion(UUID testId, String credentials) {
-    TestSession testSession = findByTestIdAndCredentials(testId, credentials);
-    ResponseEntry responseEntry = nextResponseEntry(testSession);
-    return responseEntry.getQuestion();
+  public TestSession finishTestSession(TestSession testSession, String answerContent) {
+    saveAnswers(testSession, answerContent);
+    testSession.setFinishedAt(LocalDateTime.now());
+
+    removeTimer(testSession.getId());
+
+    return testSessionRepository.save(testSession);
   }
 
   @Override
-  @Transactional
-  public TestSession saveAnswer(UUID testId, String credentials, List<Long> answerIds) {
-    TestSession testSession = findByTestIdAndCredentials(testId, credentials);
+  public TestSession forceEndTestSession(Long testSessionId) {
+    TestSession testSession =
+        testSessionRepository
+            .findById(testSessionId)
+            .orElseThrow(() -> new TestSessionNotFoundException(testSessionId));
+
+    testSession.setFinishedAt(LocalDateTime.now());
+
+    removeTimer(testSessionId);
+
+    return testSessionRepository.save(testSession);
+  }
+
+  private void saveAnswers(TestSession testSession, List<Long> answerIds) {
     ResponseEntry responseEntry = nextResponseEntry(testSession);
     if (responseEntry.getQuestion().getType() == QuestionType.ESSAY) {
       throw new IllegalArgumentException("Answer must be a text");
     }
+
     List<Answer> answers = new ArrayList<>(responseEntry.getQuestion().getAnswers());
     answers =
         answers.stream().filter(a -> answerIds.contains(a.getId())).collect(Collectors.toList());
     if (answers.isEmpty()) {
       throw new IllegalArgumentException("Answers must not be empty");
     }
+
+    if (responseEntry.getQuestion().getType() == QuestionType.SINGLE_CHOICE && answers.size() > 1) {
+      throw new IllegalArgumentException("Only one answer is allowed for SINGLE_CHOICE questions");
+    }
+
     responseEntry.setAnswers(answers);
-    testSession.setCurrentQuestionIndex(testSession.getCurrentQuestionIndex() + 1);
-    return testSessionRepository.save(testSession);
   }
 
-  @Override
-  @Transactional
-  public TestSession saveAnswer(UUID testId, String credentials, String answerContent) {
-    TestSession testSession = findByTestIdAndCredentials(testId, credentials);
+  private void saveAnswers(TestSession testSession, String answerContent) {
     ResponseEntry responseEntry = nextResponseEntry(testSession);
     if (responseEntry.getQuestion().getType() != QuestionType.ESSAY) {
-      throw new IllegalArgumentException("Answer must be a list of ids");
+      throw new IllegalArgumentException("Answer must not be a text");
     }
+
     List<Answer> answers = new ArrayList<>();
     Answer essayAnswer =
         Essay.builder()
@@ -156,26 +197,16 @@ public class TestSessionServiceImpl implements TestSessionService {
     answerRepository.save(essayAnswer);
     answers.add(essayAnswer);
     responseEntry.setAnswers(answers);
-    testSession.setCurrentQuestionIndex(testSession.getCurrentQuestionIndex() + 1);
-    return testSessionRepository.save(testSession);
   }
 
-  @Override
-  @Transactional
-  public TestSession finishTestSession(UUID testId, String credentials) {
-    TestSession testSession = findByTestIdAndCredentials(testId, credentials);
-    testSession.setFinishedAt(LocalDateTime.now());
-    return testSessionRepository.save(testSession);
-  }
-
-  private static void addTestQuestions(
+  private void addTestQuestions(
       List<ResponseEntry> responses, List<Question> testQuestions, TestSession testSession) {
     for (Question question : testQuestions) {
       responses.add(ResponseEntry.builder().question(question).testSession(testSession).build());
     }
   }
 
-  private static void addSampleQuestions(
+  private void addSampleQuestions(
       List<ResponseEntry> responses, List<Sample> samples, TestSession testSession) {
     Random random = new Random();
     for (Sample sample : samples) {
@@ -191,7 +222,7 @@ public class TestSessionServiceImpl implements TestSessionService {
     }
   }
 
-  private static ResponseEntry nextResponseEntry(TestSession testSession) {
+  private ResponseEntry nextResponseEntry(TestSession testSession) {
     return testSession.getResponses().stream()
         .filter(r -> r.getAnswers().isEmpty())
         .findFirst()

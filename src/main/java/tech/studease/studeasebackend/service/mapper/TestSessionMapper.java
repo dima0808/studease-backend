@@ -13,7 +13,6 @@ public interface TestSessionMapper {
 
   default TestSession toTestSession(TestSessionDto testSessionDto) {
     return TestSession.builder()
-        .sessionId(testSessionDto.getSessionId())
         .studentGroup(testSessionDto.getStudentGroup())
         .studentName(testSessionDto.getStudentName())
         .build();
