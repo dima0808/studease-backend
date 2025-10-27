@@ -36,7 +36,7 @@ public class Question {
 
   @OneToMany(
       mappedBy = "question",
-      fetch = FetchType.LAZY,
+      fetch = FetchType.EAGER,
       orphanRemoval = true,
       cascade = CascadeType.ALL)
   private List<Answer> answers;

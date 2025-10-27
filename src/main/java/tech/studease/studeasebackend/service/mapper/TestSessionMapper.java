@@ -25,6 +25,7 @@ public interface TestSessionMapper {
   default TestSessionDto toTestSessionDto(
       TestSession testSession, boolean includeResponses, boolean isAdmin) {
     return TestSessionDto.builder()
+        .sessionId(testSession.getId().toString())
         .studentGroup(testSession.getStudentGroup())
         .studentName(testSession.getStudentName())
         .startedAt(testSession.getStartedAt())

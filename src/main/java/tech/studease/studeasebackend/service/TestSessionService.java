@@ -12,7 +12,9 @@ public interface TestSessionService {
 
   TestSession findByTestIdAndCredentials(UUID testId, Credentials credentials);
 
-  TestSession startTestSession(UUID testId, Credentials credentials);
+  Question startTestSession(UUID testId, Credentials credentials);
+
+  Question getCurrentQuestion(UUID testId, Credentials credentials);
 
   Question nextQuestion(TestSession testSession, List<Long> answerIds);
 

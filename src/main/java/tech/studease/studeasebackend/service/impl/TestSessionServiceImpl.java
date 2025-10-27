@@ -67,7 +67,7 @@ public class TestSessionServiceImpl implements TestSessionService {
   }
 
   @Override
-  public TestSession startTestSession(UUID testId, Credentials credentials) {
+  public Question startTestSession(UUID testId, Credentials credentials) {
     String studentGroup = credentials.studentGroup();
     String studentName = credentials.studentName();
     if (testSessionRepository.existsByStudentGroupAndStudentNameAndTestId(
@@ -104,7 +104,13 @@ public class TestSessionServiceImpl implements TestSessionService {
 
     addTimer(testSession.getId(), test.getMinutesToComplete() * 60);
 
-    return testSession;
+    return nextResponseEntry(testSession).getQuestion();
+  }
+
+  @Override
+  public Question getCurrentQuestion(UUID testId, Credentials credentials) {
+    TestSession testSession = findByTestIdAndCredentials(testId, credentials);
+    return nextResponseEntry(testSession).getQuestion();
   }
 
   @Override
@@ -202,7 +208,12 @@ public class TestSessionServiceImpl implements TestSessionService {
   private void addTestQuestions(
       List<ResponseEntry> responses, List<Question> testQuestions, TestSession testSession) {
     for (Question question : testQuestions) {
-      responses.add(ResponseEntry.builder().question(question).testSession(testSession).build());
+      responses.add(
+          ResponseEntry.builder()
+              .question(question)
+              .answers(new ArrayList<>())
+              .testSession(testSession)
+              .build());
     }
   }
 
@@ -217,7 +228,12 @@ public class TestSessionServiceImpl implements TestSessionService {
               .collect(Collectors.toList());
       for (int i = 0; i < sample.getQuestionsCount(); i++) {
         Question question = selectedQuestions.remove(random.nextInt(selectedQuestions.size()));
-        responses.add(ResponseEntry.builder().question(question).testSession(testSession).build());
+        responses.add(
+            ResponseEntry.builder()
+                .question(question)
+                .answers(new ArrayList<>())
+                .testSession(testSession)
+                .build());
       }
     }
   }

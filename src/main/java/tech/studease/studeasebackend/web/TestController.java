@@ -40,11 +40,26 @@ public class TestController {
   }
 
   @PostMapping("{testId}/start")
-  public ResponseEntity<TestSessionDto> startTest(
+  public ResponseEntity<QuestionDto> startTest(
       @PathVariable UUID testId, @RequestBody Credentials credentials) {
     return ResponseEntity.ok(
-        testSessionMapper.toTestSessionDto(
+        questionMapper.toQuestionDto(
             testSessionService.startTestSession(testId, credentials), false));
+  }
+
+  @PostMapping("{testId}/current-question")
+  public ResponseEntity<QuestionDto> getCurrentQuestion(
+      @PathVariable UUID testId, @RequestBody Credentials credentials) {
+    return ResponseEntity.ok(
+        questionMapper.toQuestionDto(
+            testSessionService.getCurrentQuestion(testId, credentials), false));
+  }
+
+  @PostMapping("{testId}/current-session")
+  public ResponseEntity<TestSessionDto> getTestSession(
+      @PathVariable UUID testId, @RequestBody Credentials credentials) {
+    TestSession testSession = testSessionService.findByTestIdAndCredentials(testId, credentials);
+    return ResponseEntity.ok(testSessionMapper.toTestSessionDto(testSession, false));
   }
 
   @PostMapping("{testId}/next-question")

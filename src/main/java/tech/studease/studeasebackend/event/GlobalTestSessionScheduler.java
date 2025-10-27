@@ -8,7 +8,9 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import tech.studease.studeasebackend.dto.websocket.TimerMessage;
 import tech.studease.studeasebackend.dto.websocket.TimerMessageType;
+import tech.studease.studeasebackend.repository.entity.TestSession;
 import tech.studease.studeasebackend.service.impl.TestSessionServiceImpl;
+import tech.studease.studeasebackend.service.mapper.TestSessionMapper;
 
 @Component
 @RequiredArgsConstructor
@@ -18,17 +20,20 @@ public class GlobalTestSessionScheduler {
 
   private static final Map<Long, Integer> testSessions = new ConcurrentHashMap<>();
   private final TestSessionServiceImpl testSessionService;
+  private final TestSessionMapper testSessionMapper;
 
   @Scheduled(fixedRate = 1000)
   public void tick() {
+    System.out.println("Ticking...");
     testSessions.forEach(
         (testSessionId, timeLeft) -> {
           if (timeLeft > 0) {
             testSessions.put(testSessionId, --timeLeft);
+            System.out.println(testSessionId + " time left: " + timeLeft);
             notifyWithUpdatedTimer(testSessionId, timeLeft);
           } else {
-            testSessionService.forceEndTestSession(testSessionId);
-            notifyTestSessionEnded(testSessionId);
+            notifyTestSessionEnded(
+                testSessionId, testSessionService.forceEndTestSession(testSessionId));
           }
         });
   }
@@ -46,8 +51,10 @@ public class GlobalTestSessionScheduler {
         "/queue/testSession/" + testSessionId, TimerMessage.of(TimerMessageType.TIMER, timeLeft));
   }
 
-  private void notifyTestSessionEnded(Long testSessionId) {
+  private void notifyTestSessionEnded(Long testSessionId, TestSession testSession) {
     messagingTemplate.convertAndSend(
-        "/queue/testSession/" + testSessionId, TimerMessage.of(TimerMessageType.FORCE_END, 0));
+        "/queue/testSession/" + testSessionId,
+        TimerMessage.of(
+            TimerMessageType.FORCE_END, 0, testSessionMapper.toTestSessionDto(testSession, true)));
   }
 }

@@ -54,6 +54,19 @@ public class ExceptionTranslator extends ResponseEntityExceptionHandler {
     return ResponseEntity.status(NOT_FOUND).body(errorResponse);
   }
 
+  @ExceptionHandler({IllegalStateException.class})
+  public ResponseEntity<CustomErrorResponse> handleIllegalStateException(
+      IllegalStateException exc, WebRequest request) {
+    CustomErrorResponse errorResponse =
+        CustomErrorResponse.builder()
+            .status(BAD_REQUEST.value())
+            .error(BAD_REQUEST.getReasonPhrase())
+            .message(exc.getMessage())
+            .path(request.getDescription(false).substring(4))
+            .build();
+    return ResponseEntity.status(BAD_REQUEST).body(errorResponse);
+  }
+
   @ExceptionHandler({
     CollectionAlreadyExistsException.class,
     IllegalArgumentException.class,

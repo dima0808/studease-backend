@@ -37,9 +37,11 @@ public class TestSession {
 
   private Integer currentQuestionIndex;
 
+  private Integer mark;
+
   @OneToMany(
       mappedBy = "testSession",
-      fetch = FetchType.LAZY,
+      fetch = FetchType.EAGER,
       orphanRemoval = true,
       cascade = CascadeType.ALL)
   private List<ResponseEntry> responses;
