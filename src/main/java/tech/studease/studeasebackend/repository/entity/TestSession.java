@@ -9,6 +9,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OrderColumn;
 import java.time.LocalDateTime;
 import java.util.List;
 import lombok.AllArgsConstructor;
@@ -44,6 +45,7 @@ public class TestSession {
       fetch = FetchType.EAGER,
       orphanRemoval = true,
       cascade = CascadeType.ALL)
+  @OrderColumn
   private List<ResponseEntry> responses;
 
   @ManyToOne(fetch = FetchType.LAZY)

@@ -24,12 +24,10 @@ public class GlobalTestSessionScheduler {
 
   @Scheduled(fixedRate = 1000)
   public void tick() {
-    System.out.println("Ticking...");
     testSessions.forEach(
         (testSessionId, timeLeft) -> {
           if (timeLeft > 0) {
             testSessions.put(testSessionId, --timeLeft);
-            System.out.println(testSessionId + " time left: " + timeLeft);
             notifyWithUpdatedTimer(testSessionId, timeLeft);
           } else {
             notifyTestSessionEnded(
