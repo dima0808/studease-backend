@@ -12,6 +12,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -31,9 +33,11 @@ public class Sample {
 
   @ManyToOne
   @JoinColumn(nullable = false)
+  @OnDelete(action = OnDeleteAction.CASCADE)
   private Collection collection;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(nullable = false)
+  @OnDelete(action = OnDeleteAction.CASCADE)
   private Test test;
 }

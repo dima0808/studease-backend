@@ -48,6 +48,13 @@ public interface TestSessionMapper {
   }
 
   default TestSessionListDto toTestSessionListDto(
+      TestSession testSession, boolean includeResponses, boolean isAdmin) {
+    return TestSessionListDto.builder()
+        .sessions(List.of(toTestSessionDto(testSession, includeResponses, isAdmin)))
+        .build();
+  }
+
+  default TestSessionListDto toTestSessionListDto(
       List<TestSession> testSessions, boolean includeResponses) {
     return TestSessionListDto.builder()
         .sessions(toTestSessionDto(testSessions, includeResponses))
