@@ -81,7 +81,7 @@ public class TestManagementController {
       @RequestParam(required = false) String studentGroup) {
     Credentials credentials =
         new Credentials(
-            studentName == null ? "" : studentName, studentGroup == null ? "" : studentGroup);
+            studentGroup == null ? "" : studentGroup, studentName == null ? "" : studentName);
 
     if (credentials.studentName().isBlank() && credentials.studentGroup().isBlank()) {
       return ResponseEntity.ok(

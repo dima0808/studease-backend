@@ -20,6 +20,7 @@ import tech.studease.studeasebackend.service.exception.CollectionAlreadyExistsEx
 import tech.studease.studeasebackend.service.exception.CollectionNotFoundException;
 import tech.studease.studeasebackend.service.exception.QuestionMergeConflictException;
 import tech.studease.studeasebackend.service.exception.TestNotFoundException;
+import tech.studease.studeasebackend.service.exception.TestSessionAlreadyExistsException;
 import tech.studease.studeasebackend.service.exception.TestSessionNotFoundException;
 
 @ControllerAdvice
@@ -39,6 +40,7 @@ public class ExceptionTranslator extends ResponseEntityExceptionHandler {
 
   @ExceptionHandler({
     TestNotFoundException.class,
+    TestSessionAlreadyExistsException.class,
     CollectionNotFoundException.class,
     TestSessionNotFoundException.class
   })
