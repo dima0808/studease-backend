@@ -36,7 +36,7 @@ public class TestController {
 
   @GetMapping("{testId}")
   public ResponseEntity<TestInfo> getTestById(@PathVariable UUID testId) {
-    return ResponseEntity.ok(testMapper.toTestInfo(testService.findById(testId)));
+    return ResponseEntity.ok(testMapper.toTestInfo(testService.findByIdForStudent(testId)));
   }
 
   @PostMapping("{testId}/start")

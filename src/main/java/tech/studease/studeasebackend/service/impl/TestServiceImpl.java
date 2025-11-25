@@ -24,13 +24,17 @@ public class TestServiceImpl implements TestService {
 
   @Override
   public List<Test> findAll() {
-    List<Test> tests = testRepository.findByAuthorEmail(getUserFromAuthentication().getEmail());
-    return tests;
+    return testRepository.findByAuthorEmail(getUserFromAuthentication().getEmail());
   }
 
   @Override
   public Test findById(UUID testId) {
     return testRepository.findById(testId).orElseThrow(() -> new TestNotFoundException(testId));
+  }
+
+  @Override
+  public Test findByIdForStudent(UUID testId) {
+    return testRepository.getTestById(testId).orElseThrow(() -> new TestNotFoundException(testId));
   }
 
   @Override

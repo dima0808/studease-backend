@@ -12,7 +12,6 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
-import org.hibernate.Hibernate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import tech.studease.studeasebackend.common.QuestionType;
@@ -48,11 +47,6 @@ public class TestSessionServiceImpl implements TestSessionService {
       sessions =
           sessions.stream().filter(s -> s.getFinishedAt() != null).collect(Collectors.toList());
     }
-    sessions.forEach(
-        s -> {
-          Hibernate.initialize(s.getResponses());
-          s.getResponses().forEach(r -> Hibernate.initialize(r.getQuestion().getAnswers()));
-        });
     return sessions;
   }
 
@@ -77,7 +71,7 @@ public class TestSessionServiceImpl implements TestSessionService {
     }
 
     Test test =
-        testRepository.findById(testId).orElseThrow(() -> new TestNotFoundException(testId));
+        testRepository.getTestById(testId).orElseThrow(() -> new TestNotFoundException(testId));
 
     if (test.getOpenDate().isAfter(LocalDateTime.now())) {
       throw new IllegalStateException("Test is not open yet");

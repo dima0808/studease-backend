@@ -11,6 +11,8 @@ public interface TestService {
 
   Test findById(UUID testId);
 
+  Test findByIdForStudent(UUID testId);
+
   Test create(Test test);
 
   Test save(Test test);

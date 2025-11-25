@@ -18,4 +18,6 @@ public interface TestRepository extends JpaRepository<Test, UUID> {
   @EntityGraph(attributePaths = {"sessions", "questions", "samples"})
   @NonNull
   Optional<Test> findById(@NonNull UUID testId);
+
+  Optional<Test> getTestById(@NonNull UUID testId);
 }
