@@ -22,6 +22,7 @@ import tech.studease.studeasebackend.service.exception.QuestionMergeConflictExce
 import tech.studease.studeasebackend.service.exception.TestNotFoundException;
 import tech.studease.studeasebackend.service.exception.TestSessionAlreadyExistsException;
 import tech.studease.studeasebackend.service.exception.TestSessionNotFoundException;
+import tech.studease.studeasebackend.service.exception.TokenExpiredException;
 
 @ControllerAdvice
 public class ExceptionTranslator extends ResponseEntityExceptionHandler {
@@ -33,6 +34,19 @@ public class ExceptionTranslator extends ResponseEntityExceptionHandler {
             .status(UNAUTHORIZED.value())
             .error(UNAUTHORIZED.getReasonPhrase())
             .message("Wrong password")
+            .path(request.getDescription(false).substring(4))
+            .build();
+    return ResponseEntity.status(UNAUTHORIZED).body(errorResponse);
+  }
+
+  @ExceptionHandler(TokenExpiredException.class)
+  public ResponseEntity<CustomErrorResponse> handleBadCredentialsException(
+      TokenExpiredException exc, WebRequest request) {
+    CustomErrorResponse errorResponse =
+        CustomErrorResponse.builder()
+            .status(UNAUTHORIZED.value())
+            .error(UNAUTHORIZED.getReasonPhrase())
+            .message(exc.getMessage())
             .path(request.getDescription(false).substring(4))
             .build();
     return ResponseEntity.status(UNAUTHORIZED).body(errorResponse);

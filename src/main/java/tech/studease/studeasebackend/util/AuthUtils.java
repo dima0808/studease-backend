@@ -15,6 +15,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import tech.studease.studeasebackend.repository.entity.User;
+import tech.studease.studeasebackend.service.exception.TokenExpiredException;
 
 @Component
 @Getter
@@ -63,6 +64,11 @@ public class AuthUtils {
   }
 
   public static User getUserFromAuthentication() {
-    return (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    if (SecurityContextHolder.getContext().getAuthentication().getPrincipal()
+        instanceof User user) {
+      return user;
+    } else {
+      throw new TokenExpiredException();
+    }
   }
 }

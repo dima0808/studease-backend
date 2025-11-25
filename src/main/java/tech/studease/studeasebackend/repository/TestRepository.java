@@ -1,9 +1,11 @@
 package tech.studease.studeasebackend.repository;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Repository;
 import tech.studease.studeasebackend.repository.entity.Test;
 
@@ -12,4 +14,8 @@ public interface TestRepository extends JpaRepository<Test, UUID> {
 
   @EntityGraph(attributePaths = {"sessions", "questions", "samples"})
   List<Test> findByAuthorEmail(String email);
+
+  @EntityGraph(attributePaths = {"sessions", "questions", "samples"})
+  @NonNull
+  Optional<Test> findById(@NonNull UUID testId);
 }
