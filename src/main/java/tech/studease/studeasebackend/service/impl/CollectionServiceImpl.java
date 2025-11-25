@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import tech.studease.studeasebackend.dto.CollectionDeleteRequestDto;
 import tech.studease.studeasebackend.repository.CollectionRepository;
-import tech.studease.studeasebackend.repository.UserRepository;
 import tech.studease.studeasebackend.repository.entity.Collection;
 import tech.studease.studeasebackend.repository.entity.User;
 import tech.studease.studeasebackend.service.CollectionService;
@@ -21,7 +20,6 @@ import tech.studease.studeasebackend.service.exception.CollectionNotFoundExcepti
 public class CollectionServiceImpl implements CollectionService {
 
   private final CollectionRepository collectionRepository;
-  private final UserRepository userRepository;
 
   @Override
   public List<Collection> findAll() {
@@ -51,6 +49,7 @@ public class CollectionServiceImpl implements CollectionService {
   @Override
   @Transactional
   public void deleteById(Long collectionId) {
+    findById(collectionId);
     collectionRepository.deleteById(collectionId);
   }
 
@@ -58,6 +57,13 @@ public class CollectionServiceImpl implements CollectionService {
   @Transactional
   public void deleteAllByIds(CollectionDeleteRequestDto request) {
     List<Collection> collections = collectionRepository.findAllById(request.getCollectionIds());
+    collections.forEach(
+        c -> {
+          if (!c.getAuthor().getEmail().equals(getUserFromAuthentication().getEmail())) {
+            throw new CollectionNotFoundException(c.getId());
+          }
+        });
+
     collectionRepository.deleteAll(collections);
   }
 }

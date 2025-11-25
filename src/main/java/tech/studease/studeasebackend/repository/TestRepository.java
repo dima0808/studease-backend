@@ -15,7 +15,7 @@ public interface TestRepository extends JpaRepository<Test, UUID> {
   @EntityGraph(attributePaths = {"sessions", "questions", "samples"})
   List<Test> findByAuthorEmail(String email);
 
-  @EntityGraph(attributePaths = {"sessions", "questions", "samples"})
+  @EntityGraph(attributePaths = {"sessions", "questions", "samples", "author"})
   @NonNull
   Optional<Test> findById(@NonNull UUID testId);
 

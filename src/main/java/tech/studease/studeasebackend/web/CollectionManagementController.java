@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -34,17 +35,20 @@ public class CollectionManagementController {
   private final QuestionMapper questionMapper;
 
   @GetMapping
+  @PreAuthorize("isAuthenticated()")
   public ResponseEntity<CollectionListInfo> getAllCollections() {
     return ResponseEntity.ok(collectionMapper.toCollectionListInfo(collectionService.findAll()));
   }
 
   @GetMapping("{collectionId}")
+  @PreAuthorize("isAuthenticated()")
   public ResponseEntity<CollectionInfo> getCollectionInfoById(@PathVariable Long collectionId) {
     return ResponseEntity.ok(
         collectionMapper.toCollectionInfo(collectionService.findById(collectionId)));
   }
 
   @GetMapping("{collectionId}/questions")
+  @PreAuthorize("isAuthenticated()")
   public ResponseEntity<QuestionListDto> getQuestionsByCollectionId(
       @PathVariable Long collectionId) {
     return ResponseEntity.ok(
@@ -52,6 +56,7 @@ public class CollectionManagementController {
   }
 
   @PostMapping
+  @PreAuthorize("isAuthenticated()")
   public ResponseEntity<CollectionInfo> createCollection(
       @RequestBody @Valid CollectionDto collectionDto) {
     return ResponseEntity.status(HttpStatus.CREATED.value())
@@ -61,6 +66,7 @@ public class CollectionManagementController {
   }
 
   @PostMapping("{collectionId}/questions")
+  @PreAuthorize("isAuthenticated()")
   public ResponseEntity<QuestionListDto> addQuestionsToCollection(
       @PathVariable Long collectionId, @RequestBody @Valid QuestionListDto questionListDto) {
     Collection collection = collectionService.findById(collectionId);
@@ -73,12 +79,14 @@ public class CollectionManagementController {
   }
 
   @DeleteMapping("{collectionId}")
+  @PreAuthorize("isAuthenticated()")
   public ResponseEntity<Void> deleteCollection(@PathVariable Long collectionId) {
     collectionService.deleteById(collectionId);
     return ResponseEntity.noContent().build();
   }
 
   @DeleteMapping
+  @PreAuthorize("isAuthenticated()")
   public ResponseEntity<Void> deleteCollections(
       @RequestBody @Valid CollectionDeleteRequestDto request) {
     collectionService.deleteAllByIds(request);

@@ -29,7 +29,12 @@ public class TestServiceImpl implements TestService {
 
   @Override
   public Test findById(UUID testId) {
-    return testRepository.findById(testId).orElseThrow(() -> new TestNotFoundException(testId));
+    Test test =
+        testRepository.findById(testId).orElseThrow(() -> new TestNotFoundException(testId));
+    if (!test.getAuthor().getEmail().equals(getUserFromAuthentication().getEmail())) {
+      throw new TestNotFoundException(testId);
+    }
+    return test;
   }
 
   @Override
@@ -53,6 +58,9 @@ public class TestServiceImpl implements TestService {
   @Override
   public Test update(UUID testId, Test test) {
     Test testToUpdate = findById(testId);
+    if (!test.getAuthor().getEmail().equals(getUserFromAuthentication().getEmail())) {
+      throw new TestNotFoundException(testId);
+    }
     if (getStartedSessions(test.getSessions()) != 0) {
       throw new ImmutableTestException(testId, "has started sessions");
     }
@@ -71,12 +79,19 @@ public class TestServiceImpl implements TestService {
 
   @Override
   public void deleteById(UUID testId) {
+    findById(testId);
     testRepository.deleteById(testId);
   }
 
   @Override
   public void deleteAllByIds(TestDeleteRequestDto request) {
-    List<Test> collections = testRepository.findAllById(request.getTestIds());
-    testRepository.deleteAll(collections);
+    List<Test> tests = testRepository.findAllById(request.getTestIds());
+    tests.forEach(
+        t -> {
+          if (!t.getAuthor().getEmail().equals(getUserFromAuthentication().getEmail())) {
+            throw new TestNotFoundException(t.getId());
+          }
+        });
+    testRepository.deleteAll(tests);
   }
 }

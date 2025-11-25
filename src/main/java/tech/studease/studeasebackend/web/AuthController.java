@@ -5,6 +5,7 @@ import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import tech.studease.studeasebackend.dto.LoginDto;
 import tech.studease.studeasebackend.dto.RegisterDto;
@@ -30,6 +31,7 @@ public class AuthController {
   }
 
   @GetMapping("/current")
+  @PreAuthorize("isAuthenticated()")
   public ResponseEntity<UserDto> getCurrentUser() {
     return ResponseEntity.ok(authService.getCurrentUser());
   }
