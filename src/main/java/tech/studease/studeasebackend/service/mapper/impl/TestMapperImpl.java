@@ -1,5 +1,6 @@
 package tech.studease.studeasebackend.service.mapper.impl;
 
+import java.util.HashSet;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import tech.studease.studeasebackend.dto.TestDto;
@@ -24,8 +25,8 @@ public class TestMapperImpl implements TestMapper {
             .deadline(testDto.getDeadline())
             .minutesToComplete(testDto.getMinutesToComplete())
             .build();
-    test.setQuestions(questionMapper.toQuestionList(testDto.getQuestions(), test));
-    test.setSamples(sampleMapper.toSampleList(testDto.getSamples(), test));
+    test.setQuestions(new HashSet<>(questionMapper.toQuestionList(testDto.getQuestions(), test)));
+    test.setSamples(new HashSet<>(sampleMapper.toSampleList(testDto.getSamples(), test)));
     return test;
   }
 }

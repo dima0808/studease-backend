@@ -11,6 +11,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -38,7 +39,7 @@ public class Test {
 
   @OneToMany(
       mappedBy = "test",
-      fetch = FetchType.EAGER,
+      fetch = FetchType.LAZY,
       orphanRemoval = true,
       cascade = CascadeType.ALL)
   private List<TestSession> sessions;
@@ -48,14 +49,14 @@ public class Test {
       fetch = FetchType.EAGER,
       orphanRemoval = true,
       cascade = CascadeType.ALL)
-  private List<Question> questions;
+  private Set<Question> questions;
 
   @OneToMany(
       mappedBy = "test",
       fetch = FetchType.EAGER,
       orphanRemoval = true,
       cascade = CascadeType.ALL)
-  private List<Sample> samples;
+  private Set<Sample> samples;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(nullable = false)

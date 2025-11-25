@@ -1,5 +1,7 @@
 package tech.studease.studeasebackend.service.impl;
 
+import static tech.studease.studeasebackend.util.AuthUtils.getUserFromAuthentication;
+
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -13,7 +15,6 @@ import tech.studease.studeasebackend.repository.entity.User;
 import tech.studease.studeasebackend.service.CollectionService;
 import tech.studease.studeasebackend.service.exception.CollectionAlreadyExistsException;
 import tech.studease.studeasebackend.service.exception.CollectionNotFoundException;
-import tech.studease.studeasebackend.service.exception.UserNotFoundException;
 
 @Service
 @RequiredArgsConstructor
@@ -39,11 +40,7 @@ public class CollectionServiceImpl implements CollectionService {
   @Override
   @Transactional
   public Collection create(Collection collection) {
-    String userEmail = SecurityContextHolder.getContext().getAuthentication().getName();
-    User author =
-        userRepository
-            .findByEmail(userEmail)
-            .orElseThrow(() -> new UserNotFoundException(userEmail));
+    User author = getUserFromAuthentication();
     if (collectionRepository.existsByNameAndAuthorEmail(collection.getName(), author.getEmail())) {
       throw new CollectionAlreadyExistsException(collection.getName());
     }

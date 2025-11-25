@@ -16,6 +16,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.security.core.userdetails.UserDetails;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -23,7 +24,7 @@ import lombok.Setter;
 @Setter
 @Builder
 @Entity(name = "users")
-public class User {
+public class User implements UserDetails {
 
   @Id
   @GeneratedValue(strategy = GenerationType.UUID)
@@ -39,18 +40,28 @@ public class User {
 
   @OneToMany(
       mappedBy = "author",
-      fetch = FetchType.EAGER,
+      fetch = FetchType.LAZY,
       orphanRemoval = true,
       cascade = CascadeType.ALL)
   private List<Test> tests;
 
   @OneToMany(
       mappedBy = "author",
-      fetch = FetchType.EAGER,
+      fetch = FetchType.LAZY,
       orphanRemoval = true,
       cascade = CascadeType.ALL)
   private List<Collection> collections;
 
   @ManyToMany(fetch = FetchType.EAGER)
   private Set<Role> roles;
+
+  @Override
+  public Set<Role> getAuthorities() {
+    return roles;
+  }
+
+  @Override
+  public String getUsername() {
+    return email;
+  }
 }

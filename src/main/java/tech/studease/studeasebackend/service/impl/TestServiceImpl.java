@@ -1,34 +1,31 @@
 package tech.studease.studeasebackend.service.impl;
 
+import static tech.studease.studeasebackend.util.AuthUtils.getUserFromAuthentication;
 import static tech.studease.studeasebackend.util.TestUtils.getFinishedSessions;
 import static tech.studease.studeasebackend.util.TestUtils.getStartedSessions;
 
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import tech.studease.studeasebackend.dto.TestDeleteRequestDto;
 import tech.studease.studeasebackend.repository.TestRepository;
-import tech.studease.studeasebackend.repository.UserRepository;
 import tech.studease.studeasebackend.repository.entity.Test;
-import tech.studease.studeasebackend.repository.entity.User;
 import tech.studease.studeasebackend.service.TestService;
 import tech.studease.studeasebackend.service.exception.ImmutableTestException;
 import tech.studease.studeasebackend.service.exception.TestNotFoundException;
-import tech.studease.studeasebackend.service.exception.UserNotFoundException;
 
 @Service
 @RequiredArgsConstructor
 public class TestServiceImpl implements TestService {
 
   private final TestRepository testRepository;
-  private final UserRepository userRepository;
 
   @Override
   public List<Test> findAll() {
-    return getUserFromAuthContext().getTests();
+    List<Test> tests = testRepository.findByAuthorEmail(getUserFromAuthentication().getEmail());
+    return tests;
   }
 
   @Override
@@ -40,7 +37,7 @@ public class TestServiceImpl implements TestService {
   @Transactional
   public Test create(Test test) {
     test.setSessions(List.of());
-    test.setAuthor(getUserFromAuthContext());
+    test.setAuthor(getUserFromAuthentication());
     return testRepository.save(test);
   }
 
@@ -77,12 +74,5 @@ public class TestServiceImpl implements TestService {
   public void deleteAllByIds(TestDeleteRequestDto request) {
     List<Test> collections = testRepository.findAllById(request.getTestIds());
     testRepository.deleteAll(collections);
-  }
-
-  private User getUserFromAuthContext() {
-    String userEmail = SecurityContextHolder.getContext().getAuthentication().getName();
-    return userRepository
-        .findByEmail(userEmail)
-        .orElseThrow(() -> new UserNotFoundException(userEmail));
   }
 }

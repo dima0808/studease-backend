@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -206,7 +207,7 @@ public class TestSessionServiceImpl implements TestSessionService {
   }
 
   private void addTestQuestions(
-      List<ResponseEntry> responses, List<Question> testQuestions, TestSession testSession) {
+      List<ResponseEntry> responses, Set<Question> testQuestions, TestSession testSession) {
     for (Question question : testQuestions) {
       responses.add(
           ResponseEntry.builder()
@@ -218,7 +219,7 @@ public class TestSessionServiceImpl implements TestSessionService {
   }
 
   private void addSampleQuestions(
-      List<ResponseEntry> responses, List<Sample> samples, TestSession testSession) {
+      List<ResponseEntry> responses, Set<Sample> samples, TestSession testSession) {
     Random random = new Random();
     for (Sample sample : samples) {
       List<Question> sampleQuestions = sample.getCollection().getQuestions();

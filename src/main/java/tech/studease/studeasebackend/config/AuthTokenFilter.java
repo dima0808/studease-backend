@@ -7,22 +7,19 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.lang.NonNull;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
-import tech.studease.studeasebackend.util.JwtUtils;
+import tech.studease.studeasebackend.service.AuthService;
+import tech.studease.studeasebackend.service.exception.UserNotFoundException;
 
 @Component
 @NoArgsConstructor
 public class AuthTokenFilter extends OncePerRequestFilter {
 
-  @Autowired private JwtUtils jwtUtils;
-
-  @Autowired private UserDetailsService userDetailsService;
+  @Autowired private AuthService authService;
 
   @Override
   protected void doFilterInternal(
@@ -30,24 +27,13 @@ public class AuthTokenFilter extends OncePerRequestFilter {
       @NonNull HttpServletResponse response,
       @NonNull FilterChain filterChain)
       throws IOException, ServletException {
-    String jwt = parseJwt(request);
-    if (jwt != null && jwtUtils.validateToken(jwt)) {
-      String email = jwtUtils.extractClaims(jwt).getSubject();
-      UserDetails userDetails = userDetailsService.loadUserByUsername(email);
-      UsernamePasswordAuthenticationToken authentication =
-          new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-      SecurityContextHolder.getContext().setAuthentication(authentication);
-    } else {
+
+    try {
+      authService.authenticate(request.getHeader(HttpHeaders.AUTHORIZATION));
+    } catch (UserNotFoundException ignored) {
       SecurityContextHolder.clearContext();
     }
-    filterChain.doFilter(request, response);
-  }
 
-  private String parseJwt(HttpServletRequest request) {
-    String headerAuth = request.getHeader("Authorization");
-    if (headerAuth != null && headerAuth.startsWith("Bearer ")) {
-      return headerAuth.substring(7);
-    }
-    return null;
+    filterChain.doFilter(request, response);
   }
 }

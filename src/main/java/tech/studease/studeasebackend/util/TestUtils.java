@@ -1,6 +1,7 @@
 package tech.studease.studeasebackend.util;
 
 import java.util.List;
+import java.util.Set;
 import tech.studease.studeasebackend.common.QuestionType;
 import tech.studease.studeasebackend.repository.entity.Answer;
 import tech.studease.studeasebackend.repository.entity.Question;
@@ -10,12 +11,12 @@ import tech.studease.studeasebackend.repository.entity.TestSession;
 
 public class TestUtils {
 
-  public static int getMaxScore(List<Question> questions, List<Sample> samples) {
+  public static int getMaxScore(Set<Question> questions, Set<Sample> samples) {
     return questions.stream().mapToInt(Question::getPoints).sum()
         + samples.stream().mapToInt((s) -> s.getPoints() * s.getQuestionsCount()).sum();
   }
 
-  public static int getQuestionsCount(List<Question> questions, List<Sample> samples) {
+  public static int getQuestionsCount(Set<Question> questions, Set<Sample> samples) {
     return questions.size() + samples.stream().mapToInt(Sample::getQuestionsCount).sum();
   }
 
