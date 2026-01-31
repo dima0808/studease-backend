@@ -26,6 +26,7 @@ import tech.studease.studeasebackend.repository.entity.ResponseEntry;
 import tech.studease.studeasebackend.repository.entity.Sample;
 import tech.studease.studeasebackend.repository.entity.Test;
 import tech.studease.studeasebackend.repository.entity.TestSession;
+import tech.studease.studeasebackend.repository.projection.testsession.TestSessionWithoutResponsesProjection;
 import tech.studease.studeasebackend.service.TestSessionService;
 import tech.studease.studeasebackend.service.exception.TestNotFoundException;
 import tech.studease.studeasebackend.service.exception.TestSessionAlreadyExistsException;
@@ -40,14 +41,11 @@ public class TestSessionServiceImpl implements TestSessionService {
   private final AnswerRepository answerRepository;
 
   @Override
-  @Transactional
-  public List<TestSession> findByTestId(UUID testId, boolean finishedOnly) {
-    List<TestSession> sessions = testSessionRepository.findTestSessionsByTestId(testId);
-    if (finishedOnly) {
-      sessions =
-          sessions.stream().filter(s -> s.getFinishedAt() != null).collect(Collectors.toList());
-    }
-    return sessions;
+  @Transactional(readOnly = true)
+  public List<TestSessionWithoutResponsesProjection> findByTestId(UUID testId, boolean finishedOnly) {
+    return finishedOnly
+            ? testSessionRepository.findTestSessionsByTestId(testId)
+            : testSessionRepository.findByTest_IdAndFinishedAtIsNotNull(testId);
   }
 
   @Override

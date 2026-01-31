@@ -27,7 +27,8 @@ public class ResponseEntry {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @ManyToOne private Question question;
+  @ManyToOne
+  private Question question;
 
   @ManyToMany(fetch = FetchType.EAGER)
   private List<Answer> answers;

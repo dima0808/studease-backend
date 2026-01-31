@@ -91,8 +91,10 @@ public class TestManagementController {
 
     if (credentials.studentName().isBlank() && credentials.studentGroup().isBlank()) {
       return ResponseEntity.ok(
-          testSessionMapper.toTestSessionListDto(
-              testSessionService.findByTestId(testId, true), false));
+          testSessionMapper.toTestSessionListDtoWithoutResponses(
+                  testSessionService.findByTestId(testId, true)
+          )
+      );
     } else {
       return ResponseEntity.ok(
           testSessionMapper.toTestSessionListDto(
@@ -105,8 +107,9 @@ public class TestManagementController {
   public ResponseEntity<byte[]> getFinishedSessionsByTestIdToCsv(@PathVariable UUID testId) {
     Test test = testService.findById(testId);
     TestSessionListDto testSessionListDto =
-        testSessionMapper.toTestSessionListDto(
-            testSessionService.findByTestId(testId, true), false);
+        testSessionMapper.toTestSessionListDtoWithoutResponses(
+                testSessionService.findByTestId(testId, true)
+        );
     HttpHeaders headers = new HttpHeaders();
     headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
     headers.setContentDispositionFormData("attachment", "sessions_" + test.getName() + ".csv");
