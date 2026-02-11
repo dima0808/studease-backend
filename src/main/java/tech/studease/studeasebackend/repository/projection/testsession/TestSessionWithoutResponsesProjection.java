@@ -14,4 +14,6 @@ public interface TestSessionWithoutResponsesProjection {
   LocalDateTime getFinishedAt();
 
   Integer getCurrentQuestionIndex();
+
+  Integer getMark();
 }

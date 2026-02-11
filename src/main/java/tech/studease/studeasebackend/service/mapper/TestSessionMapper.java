@@ -60,6 +60,7 @@ public interface TestSessionMapper {
         .startedAt(projection.getStartedAt())
         .finishedAt(projection.getFinishedAt())
         .currentQuestionIndex(projection.getCurrentQuestionIndex())
+        .mark(projection.getMark())
         .build();
   }
 

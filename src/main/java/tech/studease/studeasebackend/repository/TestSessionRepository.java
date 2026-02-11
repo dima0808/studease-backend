@@ -26,7 +26,8 @@ public interface TestSessionRepository extends JpaRepository<TestSession, Long> 
         ts.studentName as studentName,
         ts.startedAt as startedAt,
         ts.finishedAt as finishedAt,
-        ts.currentQuestionIndex as currentQuestionIndex
+        ts.currentQuestionIndex as currentQuestionIndex,
+        ts.mark as mark
     from TestSession ts
     where ts.test.id = :testId
 """)
@@ -40,7 +41,8 @@ public interface TestSessionRepository extends JpaRepository<TestSession, Long> 
         ts.studentName as studentName,
         ts.startedAt as startedAt,
         ts.finishedAt as finishedAt,
-        ts.currentQuestionIndex as currentQuestionIndex
+        ts.currentQuestionIndex as currentQuestionIndex,
+        ts.mark as mark
     from TestSession ts
     where ts.finishedAt is not null
       and ts.test.id = :testId
