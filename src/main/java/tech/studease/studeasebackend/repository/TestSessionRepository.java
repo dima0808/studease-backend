@@ -28,6 +28,7 @@ public interface TestSessionRepository extends JpaRepository<TestSession, Long> 
         ts.finishedAt as finishedAt,
         ts.currentQuestionIndex as currentQuestionIndex
     from TestSession ts
+    where ts.test.id = :testId
 """)
   List<TestSessionWithoutResponsesProjection> findTestSessionsByTestId(UUID testId);
 
