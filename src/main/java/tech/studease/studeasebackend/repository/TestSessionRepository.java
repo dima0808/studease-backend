@@ -18,7 +18,8 @@ public interface TestSessionRepository extends JpaRepository<TestSession, Long> 
   boolean existsByStudentGroupAndStudentNameAndTestId(
       String studentGroup, String studentName, UUID testId);
 
-  @Query("""
+  @Query(
+      """
     select
         ts.id as id,
         ts.studentGroup as studentGroup,
@@ -30,7 +31,8 @@ public interface TestSessionRepository extends JpaRepository<TestSession, Long> 
 """)
   List<TestSessionWithoutResponsesProjection> findTestSessionsByTestId(UUID testId);
 
-  @Query("""
+  @Query(
+      """
     select
         ts.id as id,
         ts.studentGroup as studentGroup,

@@ -92,9 +92,7 @@ public class TestManagementController {
     if (credentials.studentName().isBlank() && credentials.studentGroup().isBlank()) {
       return ResponseEntity.ok(
           testSessionMapper.toTestSessionListDtoWithoutResponses(
-                  testSessionService.findByTestId(testId, true)
-          )
-      );
+              testSessionService.findByTestId(testId, true)));
     } else {
       return ResponseEntity.ok(
           testSessionMapper.toTestSessionListDto(
@@ -108,8 +106,7 @@ public class TestManagementController {
     Test test = testService.findById(testId);
     TestSessionListDto testSessionListDto =
         testSessionMapper.toTestSessionListDtoWithoutResponses(
-                testSessionService.findByTestId(testId, true)
-        );
+            testSessionService.findByTestId(testId, true));
     HttpHeaders headers = new HttpHeaders();
     headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
     headers.setContentDispositionFormData("attachment", "sessions_" + test.getName() + ".csv");

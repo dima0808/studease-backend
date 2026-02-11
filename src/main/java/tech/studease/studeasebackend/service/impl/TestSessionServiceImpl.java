@@ -31,6 +31,7 @@ import tech.studease.studeasebackend.service.TestSessionService;
 import tech.studease.studeasebackend.service.exception.TestNotFoundException;
 import tech.studease.studeasebackend.service.exception.TestSessionAlreadyExistsException;
 import tech.studease.studeasebackend.service.exception.TestSessionNotFoundException;
+import tech.studease.studeasebackend.util.TestUtils;
 
 @Service
 @RequiredArgsConstructor
@@ -42,10 +43,11 @@ public class TestSessionServiceImpl implements TestSessionService {
 
   @Override
   @Transactional(readOnly = true)
-  public List<TestSessionWithoutResponsesProjection> findByTestId(UUID testId, boolean finishedOnly) {
+  public List<TestSessionWithoutResponsesProjection> findByTestId(
+      UUID testId, boolean finishedOnly) {
     return finishedOnly
-            ? testSessionRepository.findTestSessionsByTestId(testId)
-            : testSessionRepository.findByTest_IdAndFinishedAtIsNotNull(testId);
+        ? testSessionRepository.findTestSessionsByTestId(testId)
+        : testSessionRepository.findByTest_IdAndFinishedAtIsNotNull(testId);
   }
 
   @Override
@@ -129,7 +131,10 @@ public class TestSessionServiceImpl implements TestSessionService {
   @Override
   public TestSession finishTestSession(TestSession testSession, List<Long> answerIds) {
     saveAnswers(testSession, answerIds);
+
     testSession.setFinishedAt(LocalDateTime.now());
+    testSession.setMark(
+        testSession.getResponses().stream().mapToInt(TestUtils::calculateMark).sum());
 
     removeTimer(testSession.getId());
 
@@ -139,7 +144,10 @@ public class TestSessionServiceImpl implements TestSessionService {
   @Override
   public TestSession finishTestSession(TestSession testSession, String answerContent) {
     saveAnswers(testSession, answerContent);
+
     testSession.setFinishedAt(LocalDateTime.now());
+    testSession.setMark(
+        testSession.getResponses().stream().mapToInt(TestUtils::calculateMark).sum());
 
     removeTimer(testSession.getId());
 
@@ -154,6 +162,8 @@ public class TestSessionServiceImpl implements TestSessionService {
             .orElseThrow(() -> new TestSessionNotFoundException(testSessionId));
 
     testSession.setFinishedAt(LocalDateTime.now());
+    testSession.setMark(
+        testSession.getResponses().stream().mapToInt(TestUtils::calculateMark).sum());
 
     removeTimer(testSessionId);
 

@@ -7,7 +7,6 @@ import tech.studease.studeasebackend.dto.TestSessionListDto;
 import tech.studease.studeasebackend.repository.entity.ResponseEntry;
 import tech.studease.studeasebackend.repository.entity.TestSession;
 import tech.studease.studeasebackend.repository.projection.testsession.TestSessionWithoutResponsesProjection;
-import tech.studease.studeasebackend.util.TestUtils;
 
 public interface TestSessionMapper {
 
@@ -26,10 +25,7 @@ public interface TestSessionMapper {
         .currentQuestionIndex(testSession.getCurrentQuestionIndex())
         .responses(
             includeResponses ? toResponseEntryDtoList(testSession.getResponses(), isAdmin) : null)
-        .mark(
-            (isAdmin && testSession.getFinishedAt() != null)
-                ? testSession.getResponses().stream().mapToInt(TestUtils::calculateMark).sum()
-                : null)
+        .mark((isAdmin && testSession.getFinishedAt() != null) ? testSession.getMark() : null)
         .build();
   }
 
@@ -40,28 +36,31 @@ public interface TestSessionMapper {
         .build();
   }
 
-  default TestSessionListDto toTestSessionListDtoWithoutResponses(List<TestSessionWithoutResponsesProjection> testSessionsWithoutResponses) {
+  default TestSessionListDto toTestSessionListDtoWithoutResponses(
+      List<TestSessionWithoutResponsesProjection> testSessionsWithoutResponses) {
     return TestSessionListDto.builder()
-            .sessions(toTestSessionDtoWithoutResponsesList(testSessionsWithoutResponses))
-            .build();
+        .sessions(toTestSessionDtoWithoutResponsesList(testSessionsWithoutResponses))
+        .build();
   }
 
-  default List<TestSessionDto> toTestSessionDtoWithoutResponsesList(List<TestSessionWithoutResponsesProjection> testSessionsWithoutResponses) {
+  default List<TestSessionDto> toTestSessionDtoWithoutResponsesList(
+      List<TestSessionWithoutResponsesProjection> testSessionsWithoutResponses) {
 
     return testSessionsWithoutResponses.stream()
-            .map(this::toTestSessionDtoWithoutResponses)
-            .toList();
+        .map(this::toTestSessionDtoWithoutResponses)
+        .toList();
   }
 
-  default TestSessionDto toTestSessionDtoWithoutResponses(TestSessionWithoutResponsesProjection projection) {
+  default TestSessionDto toTestSessionDtoWithoutResponses(
+      TestSessionWithoutResponsesProjection projection) {
     return TestSessionDto.builder()
-            .sessionId(String.valueOf(projection.getId()))
-            .studentGroup(projection.getStudentGroup())
-            .studentName(projection.getStudentName())
-            .startedAt(projection.getStartedAt())
-            .finishedAt(projection.getFinishedAt())
-            .currentQuestionIndex(projection.getCurrentQuestionIndex())
-            .build();
+        .sessionId(String.valueOf(projection.getId()))
+        .studentGroup(projection.getStudentGroup())
+        .studentName(projection.getStudentName())
+        .startedAt(projection.getStartedAt())
+        .finishedAt(projection.getFinishedAt())
+        .currentQuestionIndex(projection.getCurrentQuestionIndex())
+        .build();
   }
 
   List<ResponseEntryDto> toResponseEntryDtoList(List<ResponseEntry> responses, boolean isAdmin);
