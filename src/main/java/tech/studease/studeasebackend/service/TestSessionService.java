@@ -5,10 +5,11 @@ import java.util.UUID;
 import tech.studease.studeasebackend.domain.Credentials;
 import tech.studease.studeasebackend.repository.entity.Question;
 import tech.studease.studeasebackend.repository.entity.TestSession;
+import tech.studease.studeasebackend.repository.projection.testsession.TestSessionWithoutResponsesProjection;
 
 public interface TestSessionService {
 
-  List<TestSession> findByTestId(UUID testId, boolean finishedOnly);
+  List<TestSessionWithoutResponsesProjection> findByTestId(UUID testId, boolean finishedOnly);
 
   TestSession findByTestIdAndCredentials(UUID testId, Credentials credentials);
 
